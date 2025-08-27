@@ -717,9 +717,21 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1617580176259349153, guid: adf79b53bb52aac49868ce3b8991543c, type: 3}
+      propertyPath: m_text
+      value: '7. Helmet
+
+        The helmet provides oxygen, shields against harmful
+        solar radiation, and includes a gold-coated visor to reduce glare. It also
+        has a communications system so astronauts can talk with their team.'
+      objectReference: {fileID: 0}
+    - target: {fileID: 4425115164660090683, guid: adf79b53bb52aac49868ce3b8991543c, type: 3}
+      propertyPath: m_Camera
+      value: 
+      objectReference: {fileID: 943961619}
     - target: {fileID: 6518199123654347002, guid: adf79b53bb52aac49868ce3b8991543c, type: 3}
       propertyPath: m_Name
-      value: helmet_connectr
+      value: Helmet
       objectReference: {fileID: 0}
     - target: {fileID: 8179245712517964596, guid: adf79b53bb52aac49868ce3b8991543c, type: 3}
       propertyPath: m_LocalPosition.x
@@ -731,7 +743,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8179245712517964596, guid: adf79b53bb52aac49868ce3b8991543c, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -0.0026955605
+      value: 3.822
       objectReference: {fileID: 0}
     - target: {fileID: 8179245712517964596, guid: adf79b53bb52aac49868ce3b8991543c, type: 3}
       propertyPath: m_LocalRotation.w
@@ -1168,6 +1180,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1188180337861777121, guid: 1a02baf4e85b25c45a46250656844056, type: 3}
+      propertyPath: m_text
+      value: '5. Right Hand Gloves
+
+        Each glove is custom-fitted and layered
+        for flexibility. They ensure astronauts can perform delicate tasks while
+        still being shielded from micrometeoroids and radiation.'
+      objectReference: {fileID: 0}
     - target: {fileID: 4002691830204524993, guid: 1a02baf4e85b25c45a46250656844056, type: 3}
       propertyPath: m_LocalPosition.x
       value: -2.16
@@ -1208,9 +1228,13 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4312052941696182767, guid: 1a02baf4e85b25c45a46250656844056, type: 3}
+      propertyPath: m_Camera
+      value: 
+      objectReference: {fileID: 943961619}
     - target: {fileID: 4488993731573065105, guid: 1a02baf4e85b25c45a46250656844056, type: 3}
       propertyPath: m_Name
-      value: right_hand
+      value: Right Hand Gloves
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -1635,9 +1659,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 943961618}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 95009368e3bbdcd4c85448cab831410c, type: 3}
+  m_Script: {fileID: 11500000, guid: d97aceff501dcaa4dafc0142c94dbc28, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  moveSpeed: 5
+  cameraTransform: {fileID: 943961622}
+  selectedDirection: 1
 --- !u!114 &943961621
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1647,9 +1674,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 943961618}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 95009368e3bbdcd4c85448cab831410c, type: 3}
+  m_Script: {fileID: 11500000, guid: d97aceff501dcaa4dafc0142c94dbc28, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  moveSpeed: 5
+  cameraTransform: {fileID: 943961622}
+  selectedDirection: 0
+--- !u!4 &943961622 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 7990873191231833676, guid: 5eccbf4be2c00e94689ee8062e4e7276, type: 3}
+  m_PrefabInstance: {fileID: 943961617}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1015577598
 GameObject:
   m_ObjectHideFlags: 0
@@ -1794,7 +1829,17 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1989670091296353154, guid: a0c5461e75d1b6042b3500ad6d28d00f, type: 3}
       propertyPath: m_Name
-      value: bag_pack
+      value: Bagpack
+      objectReference: {fileID: 0}
+    - target: {fileID: 4800304802790620637, guid: a0c5461e75d1b6042b3500ad6d28d00f, type: 3}
+      propertyPath: m_Camera
+      value: 
+      objectReference: {fileID: 943961619}
+    - target: {fileID: 6454878694219437038, guid: a0c5461e75d1b6042b3500ad6d28d00f, type: 3}
+      propertyPath: m_text
+      value: "6. Primary Life Support System - PLSS\nThe backpack contains life-support
+        essentials: oxygen supply, carbon dioxide removal, cooling water, and power
+        systems. It is the astronaut\u2019s lifeline in space"
       objectReference: {fileID: 0}
     - target: {fileID: 6727523874799669486, guid: a0c5461e75d1b6042b3500ad6d28d00f, type: 3}
       propertyPath: m_LocalPosition.x
@@ -2677,7 +2722,15 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 943961620}
     - target: {fileID: 2272792351538558091, guid: 12e7c6e2a052ca344a4b1b5616e1597c, type: 3}
+      propertyPath: m_GestureEnded.m_PersistentCalls.m_Calls.Array.data[1].m_Target
+      value: 
+      objectReference: {fileID: 943961620}
+    - target: {fileID: 2272792351538558091, guid: 12e7c6e2a052ca344a4b1b5616e1597c, type: 3}
       propertyPath: m_GesturePerformed.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2272792351538558091, guid: 12e7c6e2a052ca344a4b1b5616e1597c, type: 3}
+      propertyPath: m_GesturePerformed.m_PersistentCalls.m_Calls.Array.data[1].m_Mode
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2272792351538558091, guid: 12e7c6e2a052ca344a4b1b5616e1597c, type: 3}
@@ -2685,7 +2738,15 @@ PrefabInstance:
       value: StopPlayer
       objectReference: {fileID: 0}
     - target: {fileID: 2272792351538558091, guid: 12e7c6e2a052ca344a4b1b5616e1597c, type: 3}
+      propertyPath: m_GestureEnded.m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
+      value: StopPlayer
+      objectReference: {fileID: 0}
+    - target: {fileID: 2272792351538558091, guid: 12e7c6e2a052ca344a4b1b5616e1597c, type: 3}
       propertyPath: m_GesturePerformed.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 943961620}
+    - target: {fileID: 2272792351538558091, guid: 12e7c6e2a052ca344a4b1b5616e1597c, type: 3}
+      propertyPath: m_GesturePerformed.m_PersistentCalls.m_Calls.Array.data[1].m_Target
       value: 
       objectReference: {fileID: 943961620}
     - target: {fileID: 2272792351538558091, guid: 12e7c6e2a052ca344a4b1b5616e1597c, type: 3}
@@ -2693,7 +2754,15 @@ PrefabInstance:
       value: MovePlayer
       objectReference: {fileID: 0}
     - target: {fileID: 2272792351538558091, guid: 12e7c6e2a052ca344a4b1b5616e1597c, type: 3}
+      propertyPath: m_GesturePerformed.m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
+      value: MovePlayer
+      objectReference: {fileID: 0}
+    - target: {fileID: 2272792351538558091, guid: 12e7c6e2a052ca344a4b1b5616e1597c, type: 3}
       propertyPath: m_GestureEnded.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: HandGesturePlayerMove, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 2272792351538558091, guid: 12e7c6e2a052ca344a4b1b5616e1597c, type: 3}
+      propertyPath: m_GestureEnded.m_PersistentCalls.m_Calls.Array.data[1].m_TargetAssemblyTypeName
       value: HandGesturePlayerMove, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 2272792351538558091, guid: 12e7c6e2a052ca344a4b1b5616e1597c, type: 3}
@@ -2701,11 +2770,23 @@ PrefabInstance:
       value: HandGesturePlayerMove, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 2272792351538558091, guid: 12e7c6e2a052ca344a4b1b5616e1597c, type: 3}
+      propertyPath: m_GesturePerformed.m_PersistentCalls.m_Calls.Array.data[1].m_TargetAssemblyTypeName
+      value: HandGesturePlayerMove, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 2272792351538558091, guid: 12e7c6e2a052ca344a4b1b5616e1597c, type: 3}
       propertyPath: m_GesturePerformed.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgument
       value: 
       objectReference: {fileID: 0}
     - target: {fileID: 2272792351538558091, guid: 12e7c6e2a052ca344a4b1b5616e1597c, type: 3}
+      propertyPath: m_GesturePerformed.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_ObjectArgument
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 2272792351538558091, guid: 12e7c6e2a052ca344a4b1b5616e1597c, type: 3}
       propertyPath: m_GesturePerformed.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
+    - target: {fileID: 2272792351538558091, guid: 12e7c6e2a052ca344a4b1b5616e1597c, type: 3}
+      propertyPath: m_GesturePerformed.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
     - target: {fileID: 2435022885875242552, guid: 12e7c6e2a052ca344a4b1b5616e1597c, type: 3}
@@ -3525,7 +3606,15 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 943961621}
     - target: {fileID: 7143353886403648717, guid: 12e7c6e2a052ca344a4b1b5616e1597c, type: 3}
+      propertyPath: m_GestureEnded.m_PersistentCalls.m_Calls.Array.data[1].m_Target
+      value: 
+      objectReference: {fileID: 943961621}
+    - target: {fileID: 7143353886403648717, guid: 12e7c6e2a052ca344a4b1b5616e1597c, type: 3}
       propertyPath: m_GesturePerformed.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7143353886403648717, guid: 12e7c6e2a052ca344a4b1b5616e1597c, type: 3}
+      propertyPath: m_GesturePerformed.m_PersistentCalls.m_Calls.Array.data[1].m_Mode
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7143353886403648717, guid: 12e7c6e2a052ca344a4b1b5616e1597c, type: 3}
@@ -3533,7 +3622,15 @@ PrefabInstance:
       value: StopPlayer
       objectReference: {fileID: 0}
     - target: {fileID: 7143353886403648717, guid: 12e7c6e2a052ca344a4b1b5616e1597c, type: 3}
+      propertyPath: m_GestureEnded.m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
+      value: StopPlayer
+      objectReference: {fileID: 0}
+    - target: {fileID: 7143353886403648717, guid: 12e7c6e2a052ca344a4b1b5616e1597c, type: 3}
       propertyPath: m_GesturePerformed.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 943961621}
+    - target: {fileID: 7143353886403648717, guid: 12e7c6e2a052ca344a4b1b5616e1597c, type: 3}
+      propertyPath: m_GesturePerformed.m_PersistentCalls.m_Calls.Array.data[1].m_Target
       value: 
       objectReference: {fileID: 943961621}
     - target: {fileID: 7143353886403648717, guid: 12e7c6e2a052ca344a4b1b5616e1597c, type: 3}
@@ -3541,7 +3638,15 @@ PrefabInstance:
       value: MovePlayer
       objectReference: {fileID: 0}
     - target: {fileID: 7143353886403648717, guid: 12e7c6e2a052ca344a4b1b5616e1597c, type: 3}
+      propertyPath: m_GesturePerformed.m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
+      value: MovePlayer
+      objectReference: {fileID: 0}
+    - target: {fileID: 7143353886403648717, guid: 12e7c6e2a052ca344a4b1b5616e1597c, type: 3}
       propertyPath: m_GestureEnded.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: HandGesturePlayerMove, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 7143353886403648717, guid: 12e7c6e2a052ca344a4b1b5616e1597c, type: 3}
+      propertyPath: m_GestureEnded.m_PersistentCalls.m_Calls.Array.data[1].m_TargetAssemblyTypeName
       value: HandGesturePlayerMove, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 7143353886403648717, guid: 12e7c6e2a052ca344a4b1b5616e1597c, type: 3}
@@ -3549,11 +3654,23 @@ PrefabInstance:
       value: HandGesturePlayerMove, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 7143353886403648717, guid: 12e7c6e2a052ca344a4b1b5616e1597c, type: 3}
+      propertyPath: m_GesturePerformed.m_PersistentCalls.m_Calls.Array.data[1].m_TargetAssemblyTypeName
+      value: HandGesturePlayerMove, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 7143353886403648717, guid: 12e7c6e2a052ca344a4b1b5616e1597c, type: 3}
       propertyPath: m_GesturePerformed.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgument
       value: 
       objectReference: {fileID: 0}
     - target: {fileID: 7143353886403648717, guid: 12e7c6e2a052ca344a4b1b5616e1597c, type: 3}
+      propertyPath: m_GesturePerformed.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_ObjectArgument
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 7143353886403648717, guid: 12e7c6e2a052ca344a4b1b5616e1597c, type: 3}
       propertyPath: m_GesturePerformed.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
+    - target: {fileID: 7143353886403648717, guid: 12e7c6e2a052ca344a4b1b5616e1597c, type: 3}
+      propertyPath: m_GesturePerformed.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
     - target: {fileID: 7183114384416942340, guid: 12e7c6e2a052ca344a4b1b5616e1597c, type: 3}
@@ -3833,9 +3950,13 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1746979597997918528, guid: 7fa57a63712f0a54c9d03c81d6afe0c9, type: 3}
+      propertyPath: m_Camera
+      value: 
+      objectReference: {fileID: 943961619}
     - target: {fileID: 5580767259487260178, guid: 7fa57a63712f0a54c9d03c81d6afe0c9, type: 3}
       propertyPath: m_Name
-      value: skin_cooling
+      value: Skin Cooling suit
       objectReference: {fileID: 0}
     - target: {fileID: 8816716356632950251, guid: 7fa57a63712f0a54c9d03c81d6afe0c9, type: 3}
       propertyPath: m_LocalPosition.x
@@ -3882,58 +4003,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7fa57a63712f0a54c9d03c81d6afe0c9, type: 3}
---- !u!1 &1497237487
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1497237488}
-  - component: {fileID: 1497237489}
-  m_Layer: 0
-  m_Name: GameManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1497237488
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1497237487}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1497237489
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1497237487}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c391197db25d70d4493680b6e1c3d072, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  steps:
-  - {fileID: 3985621160898858754, guid: 7fa57a63712f0a54c9d03c81d6afe0c9, type: 3}
-  - {fileID: 1948189746207376900, guid: 66379e63786580b41b667f97768d8e9f, type: 3}
-  - {fileID: 5079693608899616728, guid: 1a02baf4e85b25c45a46250656844056, type: 3}
-  - {fileID: 8355871702420546540, guid: 577c3e076fee5af4d90bec6cf4883aff, type: 3}
-  - {fileID: -8497564679406790406, guid: e2a9646544b5cd14f88b648eaa362ac0, type: 3}
-  - {fileID: -5325399796014167161, guid: adf79b53bb52aac49868ce3b8991543c, type: 3}
-  - {fileID: 6729341536947275582, guid: a0c5461e75d1b6042b3500ad6d28d00f, type: 3}
 --- !u!1 &1558451196
 GameObject:
   m_ObjectHideFlags: 0
@@ -3977,7 +4046,19 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 3206367410731979842, guid: 66379e63786580b41b667f97768d8e9f, type: 3}
       propertyPath: m_Name
-      value: left_hand
+      value: left Hand Gloves
+      objectReference: {fileID: 0}
+    - target: {fileID: 3997591587841938794, guid: 66379e63786580b41b667f97768d8e9f, type: 3}
+      propertyPath: m_Camera
+      value: 
+      objectReference: {fileID: 943961619}
+    - target: {fileID: 4279788613427336301, guid: 66379e63786580b41b667f97768d8e9f, type: 3}
+      propertyPath: m_text
+      value: '4. Left Hand Gloves
+
+        Gloves protect the hands from extreme
+        space temperatures while allowing mobility to grip tools and operate instruments.
+        Special materials prevent both frostbite and burns.'
       objectReference: {fileID: 0}
     - target: {fileID: 5274003779404574992, guid: 66379e63786580b41b667f97768d8e9f, type: 3}
       propertyPath: m_LocalPosition.x
@@ -4592,9 +4673,33 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1381865179529670888, guid: e2a9646544b5cd14f88b648eaa362ac0, type: 3}
+      propertyPath: m_Camera
+      value: 
+      objectReference: {fileID: 943961619}
     - target: {fileID: 2053318759214722527, guid: e2a9646544b5cd14f88b648eaa362ac0, type: 3}
       propertyPath: m_Name
-      value: main_suit
+      value: Main Suit
+      objectReference: {fileID: 0}
+    - target: {fileID: 4466749008801951783, guid: e2a9646544b5cd14f88b648eaa362ac0, type: 3}
+      propertyPath: m_text
+      value: '2. Pressure Garment
+
+        The Pressure Garment maintains pressure
+        around the body, provides oxygen, and protects astronauts from the vacuum
+        of space. It is the core barrier between the astronaut and space.'
+      objectReference: {fileID: 0}
+    - target: {fileID: 7015251337243716487, guid: e2a9646544b5cd14f88b648eaa362ac0, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1.3145463
+      objectReference: {fileID: 0}
+    - target: {fileID: 7015251337243716487, guid: e2a9646544b5cd14f88b648eaa362ac0, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1.3145466
+      objectReference: {fileID: 0}
+    - target: {fileID: 7015251337243716487, guid: e2a9646544b5cd14f88b648eaa362ac0, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 1.3145466
       objectReference: {fileID: 0}
     - target: {fileID: 7015251337243716487, guid: e2a9646544b5cd14f88b648eaa362ac0, type: 3}
       propertyPath: m_LocalPosition.x
@@ -4614,15 +4719,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7015251337243716487, guid: e2a9646544b5cd14f88b648eaa362ac0, type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 7015251337243716487, guid: e2a9646544b5cd14f88b648eaa362ac0, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 7015251337243716487, guid: e2a9646544b5cd14f88b648eaa362ac0, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 7015251337243716487, guid: e2a9646544b5cd14f88b648eaa362ac0, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -4955,6 +5060,12 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1369931380295856340, guid: 577c3e076fee5af4d90bec6cf4883aff, type: 3}
+      propertyPath: m_text
+      value: "3. Space Boots\nSpace boots are designed with insulation and sturdy
+        soles to protect astronauts\u2019 feet from sharp surfaces on spacecraft
+        or the Moon, while maintaining comfort in zero gravity"
+      objectReference: {fileID: 0}
     - target: {fileID: 4442182941392080891, guid: 577c3e076fee5af4d90bec6cf4883aff, type: 3}
       propertyPath: m_LocalPosition.x
       value: -2.16
@@ -4995,9 +5106,13 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4784709834666532379, guid: 577c3e076fee5af4d90bec6cf4883aff, type: 3}
+      propertyPath: m_Camera
+      value: 
+      objectReference: {fileID: 943961619}
     - target: {fileID: 7223363814989161543, guid: 577c3e076fee5af4d90bec6cf4883aff, type: 3}
       propertyPath: m_Name
-      value: shoes
+      value: Shoes
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -10732,7 +10847,7 @@ GameObject:
   - component: {fileID: 5607090879479019550}
   - component: {fileID: 5607090879479019551}
   m_Layer: 0
-  m_Name: shoes
+  m_Name: Shoes
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -10778,8 +10893,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   partName: 
-  astronautMeshFilter: {fileID: 0}
-  astronautMeshRenderer: {fileID: 0}
 --- !u!4 &5616876615990065302
 Transform:
   m_ObjectHideFlags: 0
@@ -11130,7 +11243,7 @@ GameObject:
   - component: {fileID: 8728331191266586862}
   - component: {fileID: 8728331191266586863}
   m_Layer: 0
-  m_Name: left_hand
+  m_Name: left Hand Gloves
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -11383,7 +11496,7 @@ GameObject:
   - component: {fileID: 9093001704443080022}
   - component: {fileID: 9093001704443080023}
   m_Layer: 0
-  m_Name: helmet_connectr
+  m_Name: Helmet
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -11803,7 +11916,7 @@ GameObject:
   - component: {fileID: 8608539252103648779}
   - component: {fileID: 8608539252103648780}
   m_Layer: 0
-  m_Name: main_suit
+  m_Name: Main Suit
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -11921,7 +12034,7 @@ GameObject:
   - component: {fileID: 8227699831111448102}
   - component: {fileID: 8227699831111448103}
   m_Layer: 0
-  m_Name: skin_cooling
+  m_Name: Skin Cooling suit
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -13215,7 +13328,7 @@ GameObject:
   - component: {fileID: 9157658130086997556}
   - component: {fileID: 9157658130086997557}
   m_Layer: 0
-  m_Name: right_hand
+  m_Name: Right Hand Gloves
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -13404,8 +13517,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   partName: 
-  astronautMeshFilter: {fileID: 0}
-  astronautMeshRenderer: {fileID: 0}
 --- !u!1 &8257108116975368111
 GameObject:
   m_ObjectHideFlags: 0
@@ -13546,7 +13657,7 @@ GameObject:
   - component: {fileID: 8870105858075597649}
   - component: {fileID: 8870105858075597650}
   m_Layer: 0
-  m_Name: bag_pack
+  m_Name: Bagpack
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -13715,8 +13826,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   partName: 
-  astronautMeshFilter: {fileID: 0}
-  astronautMeshRenderer: {fileID: 0}
 --- !u!1 &8615052539049983430
 GameObject:
   m_ObjectHideFlags: 0
@@ -13834,7 +13943,7 @@ Transform:
   m_GameObject: {fileID: 8160297042031612931}
   serializedVersion: 2
   m_LocalRotation: {x: -0.000000037748954, y: 0, z: -0, w: 1}
-  m_LocalPosition: {x: 1.3254378, y: 2.4957347, z: -0.08338388}
+  m_LocalPosition: {x: 1.326, y: 2.495, z: -0.02}
   m_LocalScale: {x: 1.3145463, y: 1.3145466, z: 1.3145466}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -13922,8 +14031,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   partName: 
-  astronautMeshFilter: {fileID: 0}
-  astronautMeshRenderer: {fileID: 0}
 --- !u!23 &8777815839870817398
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -14045,8 +14152,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   partName: 
-  astronautMeshFilter: {fileID: 0}
-  astronautMeshRenderer: {fileID: 0}
 --- !u!1 &8872968430202326483
 GameObject:
   m_ObjectHideFlags: 0
@@ -14341,7 +14446,7 @@ Transform:
   m_GameObject: {fileID: 6180939718892635803}
   serializedVersion: 2
   m_LocalRotation: {x: -0.000000037748954, y: 0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.31225687, y: 1.9622767, z: -0.2733897}
+  m_LocalPosition: {x: -0.256, y: 1.9622767, z: -0.3}
   m_LocalScale: {x: 1.3145463, y: 1.3145466, z: 1.3145466}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -14387,8 +14492,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   partName: 
-  astronautMeshFilter: {fileID: 0}
-  astronautMeshRenderer: {fileID: 0}
 --- !u!33 &9096948092613107041
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -14452,8 +14555,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   partName: 
-  astronautMeshFilter: {fileID: 0}
-  astronautMeshRenderer: {fileID: 0}
 --- !u!1 &9164597594011105827
 GameObject:
   m_ObjectHideFlags: 0
@@ -14604,11 +14705,10 @@ SceneRoots:
   - {fileID: 1558451197}
   - {fileID: 928879316}
   - {fileID: 1997830798}
-  - {fileID: 1497237488}
   - {fileID: 1456338488}
-  - {fileID: 2124748945}
-  - {fileID: 834981416}
   - {fileID: 1989498408}
+  - {fileID: 2124748945}
   - {fileID: 1590612428}
-  - {fileID: 597530223}
+  - {fileID: 834981416}
   - {fileID: 1125159122}
+  - {fileID: 597530223}
