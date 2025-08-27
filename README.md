@@ -42,4 +42,4 @@ Suit Up VR is an interactive virtual reality learning experience that teaches pl
 - Optimize user experience for classroom learning
 
 ## License
-This project is for educational use. Licensing details to be determined.
+I, Ristwak Pandey, hold all rights to this game as I am the sole developer. I have full authority over the design, development, and distribution of this project.
