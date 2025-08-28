@@ -158,6 +158,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mainMenuPanel: {fileID: 1552234995}
   aboutPanel: {fileID: 1418968179}
+  gameOverPanel: {fileID: 576630024}
   gameContent:
   - {fileID: 4015970325339410169}
   - {fileID: 643996956}
@@ -168,6 +169,8 @@ MonoBehaviour:
   - {fileID: 1931159662}
   - {fileID: 1895708372}
   background: {fileID: 0}
+  timeLimit: 240
+  timeLimitText: {fileID: 0}
 --- !u!4 &25222479
 Transform:
   m_ObjectHideFlags: 0
@@ -16820,6 +16823,6 @@ SceneRoots:
   - {fileID: 834981416}
   - {fileID: 1125159122}
   - {fileID: 597530223}
-  - {fileID: 209592119}
   - {fileID: 1548306534}
   - {fileID: 25222479}
+  - {fileID: 209592119}
