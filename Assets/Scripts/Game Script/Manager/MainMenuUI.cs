@@ -40,6 +40,7 @@ public class MainMenuUI : MonoBehaviour
 
         if (gameOverPanel != null)
             gameOverPanel.SetActive(false); // Hide at start
+        
     }
 
     public void OnStartButton()
@@ -53,6 +54,15 @@ public class MainMenuUI : MonoBehaviour
                 if (content != null)
                     content.SetActive(true);
         }
+
+        if (AudioManager.instance != null)
+            AudioManager.instance.PlayNarration(AudioManager.instance.introClip);
+
+        if (AudioManager.instance != null)
+            AudioManager.instance.PlayMusic(AudioManager.instance.gameMusic);
+
+        // ✅ Start the mission timer
+        SuitMeshAttach.StartMission();
     }
 
     public void OnAboutButton()
@@ -70,14 +80,19 @@ public class MainMenuUI : MonoBehaviour
     public void OnExitButton()
     {
         Application.Quit();
-        Debug.Log("Quit Game"); // 
-        // 
-        // Works in build, not in editor
+        Debug.Log("Quit Game"); // Works in build, not in editor
     }
 
     public void ShowGameOverPanel()
     {
         if (gameOverPanel != null)
             gameOverPanel.SetActive(true);
+    }
+
+    // ✅ Restart function for "Restart" button on GameOver panel
+    public void OnRestartButton()
+    {
+        // Reloads the current active scene
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 }

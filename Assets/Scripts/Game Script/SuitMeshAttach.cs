@@ -1,20 +1,15 @@
 using UnityEngine;
-using UnityEngine.UI; // For timer UI if needed
 
 public class SuitMeshAttach : MonoBehaviour
 {
     [Header("References")]
-    public string partName;            // e.g. "Helmet", "Bagpack"
-    private MeshRenderer meshRenderer; // MeshRenderer on astronaut body slot
+    public string partName;            
+    private MeshRenderer meshRenderer; 
 
     [Header("Timer Settings")]
     private static float timeRemaining;
     private static bool isTimerRunning = false;
 
-
-    [Header("UI References")]
-
-    // Define the correct order
     private static readonly string[] suitOrder =
     {
         "Skin Cooling suit",
@@ -26,7 +21,7 @@ public class SuitMeshAttach : MonoBehaviour
         "Helmet"
     };
 
-    private static int currentStep = 0; // Tracks what part is next
+    private static int currentStep = 0; 
     private static bool missionComplete = false;
 
     private void Awake()
@@ -36,14 +31,7 @@ public class SuitMeshAttach : MonoBehaviour
 
         meshRenderer = GetComponent<MeshRenderer>();
         if (meshRenderer != null)
-            meshRenderer.enabled = false; // Hide at start
-
-        // Start timer only once
-        if (!isTimerRunning)
-        {
-            timeRemaining = MainMenuUI.globalTimeLimit;
-            isTimerRunning = true;
-        }
+            meshRenderer.enabled = false; 
     }
 
     private void Update()
@@ -64,11 +52,20 @@ public class SuitMeshAttach : MonoBehaviour
         }
     }
 
+    // ✅ Called from MainMenuUI.OnStartButton()
+    public static void StartMission()
+    {
+        timeRemaining = MainMenuUI.globalTimeLimit;
+        isTimerRunning = true;
+        missionComplete = false;
+        currentStep = 0;
+
+        Debug.Log("Mission started! Time limit: " + timeRemaining + " seconds.");
+    }
+
     private void OnTriggerEnter(Collider other)
     {
         if (missionComplete || !isTimerRunning) return;
-
-        Debug.Log($"Trigger entered by: {other.gameObject.name}");
 
         SuitItem item = other.GetComponent<SuitItem>();
         if (item != null && item.partName == partName)
@@ -80,20 +77,15 @@ public class SuitMeshAttach : MonoBehaviour
 
                 Destroy(item.gameObject);
 
-                Debug.Log($"{partName} equipped!");
                 PlayNarrationForPart(partName);
                 currentStep++;
 
-                // If last step completed
                 if (currentStep >= suitOrder.Length)
                 {
                     missionComplete = true;
                     isTimerRunning = false;
 
-                    // ✅ Play mission complete narration
                     AudioManager.instance.PlayNarration(AudioManager.instance.missionCompleteClip);
-
-                    // ✅ Open GameOver panel
                     MainMenuUI.instance.ShowGameOverPanel();
 
                     Debug.Log("All suit parts equipped! Mission Complete!");
@@ -111,26 +103,19 @@ public class SuitMeshAttach : MonoBehaviour
         switch (part)
         {
             case "Skin Cooling suit":
-                AudioManager.instance.PlayNarration(AudioManager.instance.skinCoolingClip);
-                break;
+                AudioManager.instance.PlayNarration(AudioManager.instance.skinCoolingClip); break;
             case "Main Suit":
-                AudioManager.instance.PlayNarration(AudioManager.instance.mainSuitClip);
-                break;
+                AudioManager.instance.PlayNarration(AudioManager.instance.mainSuitClip); break;
             case "Shoes":
-                AudioManager.instance.PlayNarration(AudioManager.instance.shoesClip);
-                break;
+                AudioManager.instance.PlayNarration(AudioManager.instance.shoesClip); break;
             case "left Hand Gloves":
-                AudioManager.instance.PlayNarration(AudioManager.instance.leftGloveClip);
-                break;
+                AudioManager.instance.PlayNarration(AudioManager.instance.leftGloveClip); break;
             case "Right Hand Gloves":
-                AudioManager.instance.PlayNarration(AudioManager.instance.rightGloveClip);
-                break;
+                AudioManager.instance.PlayNarration(AudioManager.instance.rightGloveClip); break;
             case "Bagpack":
-                AudioManager.instance.PlayNarration(AudioManager.instance.backpackClip);
-                break;
+                AudioManager.instance.PlayNarration(AudioManager.instance.backpackClip); break;
             case "Helmet":
-                AudioManager.instance.PlayNarration(AudioManager.instance.helmetClip);
-                break;
+                AudioManager.instance.PlayNarration(AudioManager.instance.helmetClip); break;
         }
     }
 
@@ -149,7 +134,9 @@ public class SuitMeshAttach : MonoBehaviour
         if (MainMenuUI.instance.timeLimitText != null)
             MainMenuUI.instance.timeLimitText.text = "00:00";
 
-        // Optional: play fail narration or load fail screen
+        // Optional fail narration
         // AudioManager.instance.PlayNarration(AudioManager.instance.failClip);
+
+        MainMenuUI.instance.ShowGameOverPanel();
     }
 }

@@ -1,22 +1,21 @@
-
 using UnityEngine;
 
-public class HandGesturePlayerMove: MonoBehaviour
+[RequireComponent(typeof(CharacterController))]
+public class HandGesturePlayerMove : MonoBehaviour
 {
-    public float moveSpeed = 5f;  // Speed of the player
-    public Transform cameraTransform;  // Reference to the camera's transform
-
-    public MoveDirection selectedDirection;  // Select direction in Inspector
+    public float moveSpeed = 5f;
+    public Transform cameraTransform;
+    public MoveDirection selectedDirection;
 
     private Vector3 moveDirection = Vector3.zero;
     private bool isMoving = false;
+    private CharacterController controller;
 
-    public enum MoveDirection
+    public enum MoveDirection { Forward, Backward, Left, Right }
+
+    void Awake()
     {
-        Forward,
-        Backward,
-        Left,
-        Right
+        controller = GetComponent<CharacterController>();
     }
 
     void Update()
@@ -31,19 +30,18 @@ public class HandGesturePlayerMove: MonoBehaviour
     {
         if (moveDirection != Vector3.zero)
         {
-            transform.Translate(moveDirection * moveSpeed * Time.deltaTime, Space.World);
+            // ✅ Uses CharacterController.Move which respects collisions
+            controller.Move(moveDirection * moveSpeed * Time.deltaTime);
         }
     }
 
-    // This method will be called from the Inspector to move the player
     public void MovePlayer()
     {
-        Debug.Log("Moving: " + selectedDirection.ToString());
+        Debug.Log("Moving: " + selectedDirection);
 
         Vector3 cameraForward = cameraTransform.forward;
         Vector3 cameraRight = cameraTransform.right;
 
-        // Ensure movement is on the horizontal plane
         cameraForward.y = 0;
         cameraRight.y = 0;
 
@@ -52,18 +50,10 @@ public class HandGesturePlayerMove: MonoBehaviour
 
         switch (selectedDirection)
         {
-            case MoveDirection.Forward:
-                moveDirection = cameraForward;
-                break;
-            case MoveDirection.Backward:
-                moveDirection = -cameraForward;
-                break;
-            case MoveDirection.Left:
-                moveDirection = -cameraRight;
-                break;
-            case MoveDirection.Right:
-                moveDirection = cameraRight;
-                break;
+            case MoveDirection.Forward: moveDirection = cameraForward; break;
+            case MoveDirection.Backward: moveDirection = -cameraForward; break;
+            case MoveDirection.Left: moveDirection = -cameraRight; break;
+            case MoveDirection.Right: moveDirection = cameraRight; break;
         }
 
         isMoving = true;
