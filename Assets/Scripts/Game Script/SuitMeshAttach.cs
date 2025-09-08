@@ -3,8 +3,8 @@ using UnityEngine;
 public class SuitMeshAttach : MonoBehaviour
 {
     [Header("References")]
-    public string partName;            
-    private MeshRenderer meshRenderer; 
+    public string partName;
+    private MeshRenderer meshRenderer;
 
     [Header("Timer Settings")]
     private static float timeRemaining;
@@ -12,17 +12,20 @@ public class SuitMeshAttach : MonoBehaviour
 
     private static readonly string[] suitOrder =
     {
-        "Skin Cooling suit",
+        "Skin Cooling Suit",
         "Main Suit",
         "Shoes",
-        "left Hand Gloves",
-        "Right Hand Gloves",
+        "Gloves",   // 👈 merged stage (represents both gloves)
         "Bagpack",
         "Helmet"
     };
 
-    private static int currentStep = 0; 
+    private static int currentStep = 0;
     private static bool missionComplete = false;
+
+    // Track both gloves
+    private static bool leftGloveEquipped = false;
+    private static bool rightGloveEquipped = false;
 
     private void Awake()
     {
@@ -31,7 +34,7 @@ public class SuitMeshAttach : MonoBehaviour
 
         meshRenderer = GetComponent<MeshRenderer>();
         if (meshRenderer != null)
-            meshRenderer.enabled = false; 
+            meshRenderer.enabled = false;
     }
 
     private void Update()
@@ -52,13 +55,15 @@ public class SuitMeshAttach : MonoBehaviour
         }
     }
 
-    // ✅ Called from MainMenuUI.OnStartButton()
     public static void StartMission()
     {
         timeRemaining = MainMenuUI.globalTimeLimit;
         isTimerRunning = true;
         missionComplete = false;
         currentStep = 0;
+
+        leftGloveEquipped = false;
+        rightGloveEquipped = false;
 
         Debug.Log("Mission started! Time limit: " + timeRemaining + " seconds.");
     }
@@ -70,31 +75,57 @@ public class SuitMeshAttach : MonoBehaviour
         SuitItem item = other.GetComponent<SuitItem>();
         if (item != null && item.partName == partName)
         {
+            // ✅ Normal stages
             if (suitOrder[currentStep] == partName)
+            {
+                EquipPart(item);
+                return;
+            }
+
+            // ✅ Glove stage (Step 3)
+            if (suitOrder[currentStep] == "Gloves" &&
+                (partName == "Left Hand Gloves" || partName == "Right Hand Gloves"))
             {
                 if (meshRenderer != null)
                     meshRenderer.enabled = true;
 
                 Destroy(item.gameObject);
-
                 PlayNarrationForPart(partName);
-                currentStep++;
 
-                if (currentStep >= suitOrder.Length)
+                if (partName == "Left Hand Gloves") leftGloveEquipped = true;
+                if (partName == "Right Hand Gloves") rightGloveEquipped = true;
+
+                // Advance only when both gloves are equipped
+                if (leftGloveEquipped && rightGloveEquipped)
                 {
-                    missionComplete = true;
-                    isTimerRunning = false;
-
-                    AudioManager.instance.PlayNarration(AudioManager.instance.missionCompleteClip);
-                    MainMenuUI.instance.ShowGameOverPanel();
-
-                    Debug.Log("All suit parts equipped! Mission Complete!");
+                    currentStep++;
+                    Debug.Log("Both gloves equipped. Moving to next step.");
                 }
+                return;
             }
-            else
-            {
-                Debug.LogWarning($"Can't equip {partName} yet! Next required: {suitOrder[currentStep]}");
-            }
+
+            Debug.LogWarning($"Can't equip {partName} yet! Next required: {suitOrder[currentStep]}");
+        }
+    }
+
+    private void EquipPart(SuitItem item)
+    {
+        if (meshRenderer != null)
+            meshRenderer.enabled = true;
+
+        Destroy(item.gameObject);
+        PlayNarrationForPart(partName);
+        currentStep++;
+
+        if (currentStep >= suitOrder.Length)
+        {
+            missionComplete = true;
+            isTimerRunning = false;
+
+            AudioManager.instance.PlayNarration(AudioManager.instance.missionCompleteClip);
+            MainMenuUI.instance.ShowGameOverPanel();
+
+            Debug.Log("All suit parts equipped! Mission Complete!");
         }
     }
 
@@ -133,9 +164,6 @@ public class SuitMeshAttach : MonoBehaviour
         Debug.Log("Time is up! Mission failed.");
         if (MainMenuUI.instance.timeLimitText != null)
             MainMenuUI.instance.timeLimitText.text = "00:00";
-
-        // Optional fail narration
-        // AudioManager.instance.PlayNarration(AudioManager.instance.failClip);
 
         MainMenuUI.instance.ShowGameOverPanel();
     }
