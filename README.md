@@ -1,45 +1,96 @@
 # Suit Up VR
 
-Suit Up VR is an interactive virtual reality learning experience that teaches players how astronauts prepare for space missions. The game takes place inside a virtual spacecraft environment and guides players through the correct sequence of putting on a space suit, layer by layer, with full interactivity.
+**Suit Up VR** is an interactive virtual reality learning experience where players learn how astronauts prepare for a space mission by correctly assembling a space suit. The game blends education and immersive VR gameplay, guiding players step by step through donning each part of the suit under a time limit.
 
-## Features
-- Step-by-step dressing sequence: cooling garment, main suit, gloves, helmet, and life support backpack
-- Interactive 3D environment with guided narration
-- Real-time feedback for correct and incorrect actions
-- Mini zero-gravity simulation challenge after dressing
-- Quiz and reflection prompts to reinforce learning
-- Completion rewards such as digital badges and recap of progress
+---
 
-## Educational Goals
-- Demonstrate the importance of each space suit component
-- Show the correct sequence of dressing for astronaut safety
-- Provide an immersive introduction to astronaut training and preparation
-- Inspire students to learn more about space science and exploration
+## 🎮 Gameplay Overview
 
-## Project Structure
-- **Scripts**: Core game logic including GameManager, SuitStep, InteractionHandler, and UIManager
-- **Scenes**: VR spacecraft environment for dressing and mission simulation
-- **UI**: Objective display, feedback messages, and quiz system
-- **Assets**: Placeholder objects for early testing, to be replaced with 3D suit models
+- The player starts in a spacecraft preparation environment.
+- The mission is to equip all space suit parts in the correct order:
+  1. Skin Cooling Suit
+  2. Main Suit
+  3. Shoes
+  4. Left Hand Glove
+  5. Right Hand Glove
+  6. Backpack
+  7. Helmet
+- Each suit component has narration explaining its purpose.
+- Players must complete the sequence **within a time limit** (default 4 minutes).
+- Completing the sequence successfully triggers a mission complete narration and a Game Over (success) panel.
+- Running out of time ends the mission with failure.
 
-## Requirements
-- Unity 2021.3 LTS or later
-- XR Interaction Toolkit
-- VR headset support (Meta Quest, HTC Vive, or other OpenXR compatible devices)
+---
 
-## Getting Started
-1. Clone the repository  
-2. Open the project in Unity  
-3. Import XR Interaction Toolkit if not already included  
-4. Play in VR mode to test interactions with placeholder objects  
-5. Replace placeholder objects with final suit models when available  
+## ✨ Features
 
-## Roadmap
-- Implement full 3D models of the space suit components
-- Add hand tracking support for zipping and attaching parts
-- Expand quiz system with more educational questions
-- Add fun facts about astronauts and space suits
-- Optimize user experience for classroom learning
+- **Step-by-step interactive dressing** of a space suit
+- **Narrated instructions** for each component
+- **Countdown timer** for added challenge
+- **Mission success and failure states**
+- **Game Over panel** with Restart and Quit options
+- **VR-ready UI** with tracked device raycasting
+- **Hand gesture-based locomotion** for immersive movement
 
-## License
-I, Ristwak Pandey, hold all rights to this game as I am the sole developer. I have full authority over the design, development, and distribution of this project.
+---
+
+## 🧑‍🏫 Educational Goals
+
+- Teach the correct sequence of donning a space suit
+- Explain the function of each suit component
+- Highlight the importance of timing and procedure in astronaut safety
+- Provide an engaging introduction to astronaut training
+
+---
+
+## 🛠️ Project Structure
+
+- **Scripts**
+  - `MainMenuUI.cs` → Handles menu, game panels, restart/quit
+  - `SuitMeshAttach.cs` → Core gameplay logic, suit assembly, timer
+  - `AudioManager.cs` → Background music and narration
+  - `HandGesturePlayerMove.cs` → Player locomotion with hand gestures
+- **UI**
+  - Main Menu panel
+  - About panel
+  - Game Over panel
+  - Timer display
+- **Audio**
+  - Narration clips for each step
+  - Intro and mission complete lines
+  - Background music and SFX
+
+---
+
+## 📦 Requirements
+
+- **Unity 2022.3 LTS** or later
+- **XR Interaction Toolkit**
+- **TextMeshPro**
+- VR headset (Meta Quest, HTC Vive, or other OpenXR compatible)
+
+---
+
+## 🚀 Getting Started
+
+1. Clone this repository.
+2. Open the project in Unity.
+3. Install and enable the **XR Interaction Toolkit** package.
+4. Connect your VR headset and ensure OpenXR is enabled in Project Settings.
+5. Press **Play** and use VR controllers or hand gestures to interact.
+
+---
+
+## 🗺️ Roadmap
+
+- Add mini-challenges in zero gravity after suiting up
+- Expand narration with quizzes and reflections
+- Improve hand gesture locomotion with physics-based collisions
+- Add more detailed astronaut environment assets
+- Localize narration for different languages
+
+---
+
+## 📜 License
+
+I, **Ristwak Pandey**, hold all rights to this game as I am the sole developer. I have full authority over the design, development, and distribution of this project.
