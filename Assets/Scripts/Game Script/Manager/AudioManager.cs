@@ -23,6 +23,7 @@ public class AudioManager : MonoBehaviour
     public AudioClip backpackClip;
     public AudioClip helmetClip;
     public AudioClip missionCompleteClip;
+    public AudioClip timeOverClip;
 
     private void Awake()
     {

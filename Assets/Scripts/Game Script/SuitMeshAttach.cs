@@ -139,7 +139,7 @@ public class SuitMeshAttach : MonoBehaviour
                 AudioManager.instance.PlayNarration(AudioManager.instance.mainSuitClip); break;
             case "Shoes":
                 AudioManager.instance.PlayNarration(AudioManager.instance.shoesClip); break;
-            case "left Hand Gloves":
+            case "Left Hand Gloves":
                 AudioManager.instance.PlayNarration(AudioManager.instance.leftGloveClip); break;
             case "Right Hand Gloves":
                 AudioManager.instance.PlayNarration(AudioManager.instance.rightGloveClip); break;
@@ -164,7 +164,8 @@ public class SuitMeshAttach : MonoBehaviour
         Debug.Log("Time is up! Mission failed.");
         if (MainMenuUI.instance.timeLimitText != null)
             MainMenuUI.instance.timeLimitText.text = "00:00";
-
+            
+        AudioManager.instance.PlayMusic(AudioManager.instance.timeOverClip);
         MainMenuUI.instance.ShowGameOverPanel();
     }
 }

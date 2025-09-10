@@ -646,6 +646,7 @@ MonoBehaviour:
   backpackClip: {fileID: 8300000, guid: f696dd9d8cea4e1469305c493f2dc306, type: 3}
   helmetClip: {fileID: 8300000, guid: e2a90424b65e6ee4caa393c17b158a43, type: 3}
   missionCompleteClip: {fileID: 8300000, guid: 9715d3f1a2b7b7f4c89ea7f120fd91bf, type: 3}
+  timeOverClip: {fileID: 8300000, guid: 3225f8a81f1f42543b8efda5d80f5d06, type: 3}
 --- !u!82 &209592121
 AudioSource:
   m_ObjectHideFlags: 0
@@ -4562,6 +4563,7 @@ GameObject:
   - component: {fileID: 786565871}
   - component: {fileID: 786565873}
   - component: {fileID: 786565872}
+  - component: {fileID: 786565874}
   m_Layer: 0
   m_Name: SM_Tri_Table_00_SM_TableSG10_0
   m_TagString: Untagged
@@ -4633,6 +4635,28 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 786565870}
+  m_Mesh: {fileID: -2937460697840288012, guid: 45fa038a23fd42c4a9864dcc7727d087, type: 3}
+--- !u!64 &786565874
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 786565870}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 0
+  m_CookingOptions: 30
   m_Mesh: {fileID: -2937460697840288012, guid: 45fa038a23fd42c4a9864dcc7727d087, type: 3}
 --- !u!1 &800703814
 GameObject:
@@ -5912,6 +5936,7 @@ GameObject:
   - component: {fileID: 1006067663}
   - component: {fileID: 1006067665}
   - component: {fileID: 1006067664}
+  - component: {fileID: 1006067666}
   m_Layer: 0
   m_Name: SM_Tri_Table_00_SM_TableSG10_0
   m_TagString: Untagged
@@ -5983,6 +6008,28 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1006067662}
+  m_Mesh: {fileID: -2937460697840288012, guid: 45fa038a23fd42c4a9864dcc7727d087, type: 3}
+--- !u!64 &1006067666
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1006067662}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 0
+  m_CookingOptions: 30
   m_Mesh: {fileID: -2937460697840288012, guid: 45fa038a23fd42c4a9864dcc7727d087, type: 3}
 --- !u!1 &1015577598
 GameObject:
@@ -17623,6 +17670,7 @@ GameObject:
   - component: {fileID: 947800307830275954}
   - component: {fileID: 7004174296540996690}
   - component: {fileID: 8026104107608060609}
+  - component: {fileID: 8026104107608060610}
   m_Layer: 0
   m_Name: SM_Tri_Table_00_SM_TableSG10_0
   m_TagString: Untagged
@@ -21472,7 +21520,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1366278542034277229}
   m_Layer: 0
-  m_Name: group1
+  m_Name: Items
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -29639,6 +29687,28 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!64 &8026104107608060610
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1438290668178742818}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: -2937460697840288012, guid: 45fa038a23fd42c4a9864dcc7727d087, type: 3}
 --- !u!23 &8053428215691678098
 MeshRenderer:
   m_ObjectHideFlags: 0
