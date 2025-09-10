@@ -40,7 +40,7 @@ public class MainMenuUI : MonoBehaviour
 
         if (gameOverPanel != null)
             gameOverPanel.SetActive(false); // Hide at start
-        
+
     }
 
     public void OnStartButton()
@@ -48,22 +48,21 @@ public class MainMenuUI : MonoBehaviour
         mainMenuPanel.SetActive(false);
         aboutPanel.SetActive(false);
 
-        if (gameContent != null)
-        {
-            foreach (var content in gameContent)
-                if (content != null)
-                    content.SetActive(true);
-        }
+        foreach (var content in gameContent)
+            if (content != null)
+                content.SetActive(true);
 
+        // ✅ Reset mission state
+        SuitMeshAttach.StartMission();
+
+        // ✅ Play intro narration
         if (AudioManager.instance != null)
             AudioManager.instance.PlayNarration(AudioManager.instance.introClip);
 
         if (AudioManager.instance != null)
             AudioManager.instance.PlayMusic(AudioManager.instance.gameMusic);
-
-        // ✅ Start the mission timer
-        SuitMeshAttach.StartMission();
     }
+
 
     public void OnAboutButton()
     {
@@ -92,7 +91,10 @@ public class MainMenuUI : MonoBehaviour
     // ✅ Restart function for "Restart" button on GameOver panel
     public void OnRestartButton()
     {
-        // Reloads the current active scene
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        // Clear all statics before reload
+        SuitMeshAttach.StartMission();
+
+        // Reload current scene (ensures all visuals reset)
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 }

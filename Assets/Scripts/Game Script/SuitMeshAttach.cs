@@ -133,7 +133,7 @@ public class SuitMeshAttach : MonoBehaviour
     {
         switch (part)
         {
-            case "Skin Cooling suit":
+            case "Skin Cooling Suit":
                 AudioManager.instance.PlayNarration(AudioManager.instance.skinCoolingClip); break;
             case "Main Suit":
                 AudioManager.instance.PlayNarration(AudioManager.instance.mainSuitClip); break;
