@@ -3889,7 +3889,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &666432080
 Transform:
   m_ObjectHideFlags: 0
@@ -6171,8 +6171,9 @@ GameObject:
   - component: {fileID: 987626280}
   - component: {fileID: 987626279}
   - component: {fileID: 987626278}
+  - component: {fileID: 987626281}
   m_Layer: 0
-  m_Name: Button
+  m_Name: SuitUpButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6266,6 +6267,23 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 987626276}
   m_Mesh: {fileID: 10206, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &987626281
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 987626276}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 686e4fa0d82beda429b73015ab86f63a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  buttonInteractable: {fileID: 0}
+  pressedPosition: {x: 0, y: -0.05, z: 0}
+  pressDuration: 0.1
+  suitParts: []
+  helmetHudOverlay: {fileID: 0}
 --- !u!1 &995814322
 GameObject:
   m_ObjectHideFlags: 0
@@ -23680,7 +23698,7 @@ Transform:
   m_GameObject: {fileID: 4015970325339410169}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: -9.82, y: -0.314, z: -2.815}
+  m_LocalPosition: {x: -9.82, y: -0.314, z: 6.5}
   m_LocalScale: {x: 0.6, y: 0.6, z: 0.6}
   m_ConstrainProportionsScale: 1
   m_Children:

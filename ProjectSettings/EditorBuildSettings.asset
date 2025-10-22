@@ -6,7 +6,7 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/SuitUp.unity
+    path: Assets/Scenes/Orbit Repair.unity
     guid: 139c40e3c90c6204d9803085cf9617bc
   m_configObjects:
     Unity.XR.Oculus.Settings: {fileID: 11400000, guid: 8bd3d9cb64326fd4db12a5e5ed156466, type: 2}
