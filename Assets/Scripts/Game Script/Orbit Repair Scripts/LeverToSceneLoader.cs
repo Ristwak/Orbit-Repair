@@ -6,39 +6,42 @@ using System.Collections;
 public class LeverToSceneLoader : MonoBehaviour
 {
     [Header("XR / Handle")]
-    public XRGrabInteractable xrGrab;      // Optional (for VR). If missing, mouse mode still works.
-    public Transform leverPivot;           // The pivot whose localEulerAngles change when pulled
-    public Vector3 rotateAxis = Vector3.right; // Which local axis the lever rotates around
-    public float pullAngleThreshold = 35f; // Degrees from start considered "pulled"
-    public Animator leverAnimator;         // Optional: has "Pulled" trigger to play an anim
+    public XRGrabInteractable xrGrab;          // Optional (for VR). If missing, mouse mode still works.
+    public Transform leverPivot;               // Rotating part
+    public Vector3 rotateAxis = Vector3.right; // Which local axis rotates
+    [Tooltip("How many degrees from the start counts as FULLY DOWN (e.g., 70–90).")]
+    public float fullDownAngle = 80f;          // Required pull from start to count as 'fully down'
+    [Tooltip("Allowed error in degrees for 'fully down' detection.")]
+    public float downTolerance = 5f;           // Slack for end position
+    public Animator leverAnimator;             // Optional: trigger 'Pulled' when it’s fully down
 
     [Header("Scene Loading")]
-    public string sceneToLoad = "ExteriorSpace";  // Target scene name
-    public LoadingScreen loadingScreen;            // Reference to loading UI controller
+    public string sceneToLoad = "ExteriorSpace";
+    public LoadingScreen loadingScreen;        // Your loading UI script (Canvas with CanvasGroup)
 
     [Header("Mouse Testing")]
-    public bool enableMouseTest = true;     // Allow left-click test in Editor/PC
-    public float mouseSimPullAngle = 40f;   // How far to rotate when simulating a pull
-    public float mouseSimSpeed = 360f;      // deg/sec for the quick sim rotate
+    public bool enableMouseTest = true;        // Click to simulate pull in Editor/PC
+    public float mouseSimSpeed = 360f;         // deg/sec for the quick sim rotate
 
-    private float startAngle;               // initial local angle about rotateAxis
+    private float startAngle;                  // cached initial lever angle
+    private float targetDownAngle;             // startAngle + fullDownAngle (normalized)
     private bool fired = false;
 
     void Awake()
     {
         if (!leverPivot) leverPivot = transform;
-        // Cache starting angle around chosen axis
-        startAngle = GetAxisAngle(leverPivot.localEulerAngles, rotateAxis);
-
         if (!xrGrab) xrGrab = GetComponent<XRGrabInteractable>();
+
+        startAngle = GetAxisAngle(leverPivot.localEulerAngles, rotateAxis);
+        targetDownAngle = Mathf.Repeat(startAngle + fullDownAngle, 360f);
     }
 
     void OnEnable()
     {
         if (xrGrab)
         {
-            // If you only want to evaluate when released, you could use selectExited
-            xrGrab.selectExited.AddListener(_ => TryFireByAngle());
+            // Fire when player releases the lever AND it is fully down.
+            xrGrab.selectExited.AddListener(_ => TryFireIfFullyDown());
         }
     }
 
@@ -54,16 +57,16 @@ public class LeverToSceneLoader : MonoBehaviour
     {
         if (fired) return;
 
-        // Live check (useful if player keeps holding the lever in VR)
-        TryFireByAngle();
+        // If player holds it at bottom without releasing, still allow firing
+        TryFireIfFullyDown();
 
-        // Mouse test path
+        // Mouse test path (click lever to simulate a full pull)
         if (enableMouseTest && Input.GetMouseButtonDown(0))
         {
             Ray ray = Camera.main ? Camera.main.ScreenPointToRay(Input.mousePosition) : new Ray(Vector3.zero, Vector3.forward);
             if (Physics.Raycast(ray, out RaycastHit hit, 100f))
             {
-                if (hit.collider && hit.collider.transform == transform || hit.collider.transform.IsChildOf(transform))
+                if (hit.collider && (hit.collider.transform == transform || hit.collider.transform.IsChildOf(transform)))
                 {
                     StartCoroutine(MouseSimPullThenLoad());
                 }
@@ -71,14 +74,14 @@ public class LeverToSceneLoader : MonoBehaviour
         }
     }
 
-    void TryFireByAngle()
+    void TryFireIfFullyDown()
     {
         if (fired || leverPivot == null) return;
 
         float current = GetAxisAngle(leverPivot.localEulerAngles, rotateAxis);
-        float delta = Mathf.Abs(Mathf.DeltaAngle(startAngle, current));
+        float diff = Mathf.Abs(Mathf.DeltaAngle(current, targetDownAngle));
 
-        if (delta >= pullAngleThreshold)
+        if (diff <= downTolerance)  // ✅ Only when truly at the bottom
         {
             Fire();
         }
@@ -90,16 +93,16 @@ public class LeverToSceneLoader : MonoBehaviour
         fired = true;
 
         if (leverAnimator) leverAnimator.SetTrigger("Pulled");
-
-        Debug.Log("[LeverToSceneLoader] Lever pulled. Loading scene: " + sceneToLoad);
+        Debug.Log("[LeverToSceneLoader] Lever fully down. Showing loading and opening scene: " + sceneToLoad);
 
         if (loadingScreen)
         {
+            // Show loading UI first, then async-load
             loadingScreen.BeginLoad(sceneToLoad);
         }
         else
         {
-            // Fallback direct load (no UI)
+            // Fallback (no UI)
             SceneManager.LoadScene(sceneToLoad);
         }
     }
@@ -108,16 +111,13 @@ public class LeverToSceneLoader : MonoBehaviour
     {
         if (leverPivot)
         {
-            // Rotate the lever quickly for visual feedback
-            float target = startAngle + mouseSimPullAngle;
+            // Smoothly rotate to the exact target down angle
             float current = GetAxisAngle(leverPivot.localEulerAngles, rotateAxis);
 
-            while (Mathf.Abs(Mathf.DeltaAngle(current, target)) > 0.5f)
+            while (Mathf.Abs(Mathf.DeltaAngle(current, targetDownAngle)) > 0.5f)
             {
-                float step = mouseSimSpeed * Time.deltaTime;
-                float next = Mathf.MoveTowardsAngle(current, target, step);
+                float next = Mathf.MoveTowardsAngle(current, targetDownAngle, mouseSimSpeed * Time.deltaTime);
 
-                // Apply on the chosen axis while preserving the others
                 Vector3 e = leverPivot.localEulerAngles;
                 ApplyAxisAngle(ref e, rotateAxis, next);
                 leverPivot.localEulerAngles = e;
@@ -127,10 +127,11 @@ public class LeverToSceneLoader : MonoBehaviour
             }
         }
 
+        // Once visually at the bottom, fire
         Fire();
     }
 
-    // --- helpers to isolate one axis of localEulerAngles ---
+    // --- helpers to read/set one axis of localEulerAngles ---
     float GetAxisAngle(Vector3 euler, Vector3 axis)
     {
         axis = axis.normalized;
@@ -144,6 +145,6 @@ public class LeverToSceneLoader : MonoBehaviour
         axis = axis.normalized;
         if (axis == Vector3.right)   euler.x = angle;
         else if (axis == Vector3.up) euler.y = angle;
-        else                         euler.z = angle; // forward
+        else                         euler.z = angle;
     }
 }
