@@ -91,6 +91,7 @@ public class SuitUpButton : MonoBehaviour
         if (helmetHudOverlay != null)
             helmetHudOverlay.SetActive(true);
 
+        OrbitRepairGameManager.Instance?.SetPhase(OrbitRepairGameManager.Phase.GrabTool);
         Debug.Log("[SuitUpButton] Suit-up sequence complete!");
     }
 }

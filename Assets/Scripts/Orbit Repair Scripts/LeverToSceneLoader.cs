@@ -84,6 +84,7 @@ public class LeverToSceneLoader : MonoBehaviour
         if (diff <= downTolerance)  // ✅ Only when truly at the bottom
         {
             Fire();
+            OrbitRepairGameManager.Instance?.SetPhase(OrbitRepairGameManager.Phase.SuitUp);
         }
     }
 
