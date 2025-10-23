@@ -8,8 +8,8 @@ public class LoadingScreen : MonoBehaviour
 {
     [Header("UI")]
     public CanvasGroup canvasGroup;     // Fade this in/out
-    public Slider progressBar;          // Optional
-    public TMP_Text progressLabel;      // Optional "Loading 73%"
+    // public Slider progressBar;          // Optional
+    // public TMP_Text progressLabel;      // Optional "Loading 73%"
 
     [Header("Timings")]
     public float fadeInTime = 0.25f;
@@ -58,15 +58,15 @@ public class LoadingScreen : MonoBehaviour
         {
             shown += Time.unscaledDeltaTime;
             float p = Mathf.Clamp01(op.progress / 0.9f);
-            if (progressBar) progressBar.value = p;
-            if (progressLabel) progressLabel.text = $"Loading {Mathf.RoundToInt(p * 100f)}%";
+            // if (progressBar) progressBar.value = p;
+            // if (progressLabel) progressLabel.text = $"Loading {Mathf.RoundToInt(p * 100f)}%";
             yield return null;
         }
 
         // Reached 0.9, now finalize display
         shown += Time.unscaledDeltaTime;
-        if (progressBar) progressBar.value = 1f;
-        if (progressLabel) progressLabel.text = "Loading 100%";
+        // if (progressBar) progressBar.value = 1f;
+        // if (progressLabel) progressLabel.text = "Loading 100%";
 
         // Ensure screen is shown at least a brief moment
         while (shown < minShowTime) { shown += Time.unscaledDeltaTime; yield return null; }
