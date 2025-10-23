@@ -3653,7 +3653,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 676921718}
-  - component: {fileID: 676921719}
   m_Layer: 0
   m_Name: Audio Manager
   m_TagString: Untagged
@@ -3676,40 +3675,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &676921719
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 676921717}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 004121dc395c41e4bbc8e28b072b9adb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  musicSource: {fileID: 0}
-  sfxSource: {fileID: 0}
-  narrationSource: {fileID: 0}
-  menuMusic: {fileID: 0}
-  gameMusic: {fileID: 0}
-  musicVolume: 0.6
-  duckedMusicVolume: 0.25
-  duckMusicDuringNarration: 1
-  welcomeSuitupClip: {fileID: 0}
-  afterSuitClip: {fileID: 0}
-  afterToolPickupClip: {fileID: 0}
-  missionCompleteClip: {fileID: 0}
-  missionFailClip: {fileID: 0}
-  introClip: {fileID: 0}
-  skinCoolingClip: {fileID: 0}
-  mainSuitClip: {fileID: 0}
-  shoesClip: {fileID: 0}
-  leftGloveClip: {fileID: 0}
-  rightGloveClip: {fileID: 0}
-  backpackClip: {fileID: 0}
-  helmetClip: {fileID: 0}
-  timeOverClip: {fileID: 0}
 --- !u!1 &687579587
 GameObject:
   m_ObjectHideFlags: 0
