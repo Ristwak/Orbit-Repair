@@ -97,6 +97,10 @@ public class LeverToSceneLoader : MonoBehaviour
 
         if (loadingScreen)
         {
+            // ✅ Ensure the LoadingScreen GameObject is active first
+            if (!loadingScreen.gameObject.activeSelf)
+                loadingScreen.gameObject.SetActive(true);
+
             // Show loading UI first, then async-load
             loadingScreen.BeginLoad(sceneToLoad);
         }
@@ -135,16 +139,17 @@ public class LeverToSceneLoader : MonoBehaviour
     float GetAxisAngle(Vector3 euler, Vector3 axis)
     {
         axis = axis.normalized;
-        if (axis == Vector3.right)   return euler.x;
-        if (axis == Vector3.up)      return euler.y;
-        /* axis == Vector3.forward */ return euler.z;
+        if (axis == Vector3.right) return euler.x;
+        if (axis == Vector3.up) return euler.y;
+        /* axis == Vector3.forward */
+        return euler.z;
     }
 
     void ApplyAxisAngle(ref Vector3 euler, Vector3 axis, float angle)
     {
         axis = axis.normalized;
-        if (axis == Vector3.right)   euler.x = angle;
+        if (axis == Vector3.right) euler.x = angle;
         else if (axis == Vector3.up) euler.y = angle;
-        else                         euler.z = angle;
+        else euler.z = angle;
     }
 }
