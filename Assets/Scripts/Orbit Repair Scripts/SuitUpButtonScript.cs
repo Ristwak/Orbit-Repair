@@ -13,6 +13,8 @@ public class SuitUpButton : MonoBehaviour
     public GameObject[] suitParts;  // All suit parts to activate
     public GameObject helmetHudOverlay;  // Optional HUD overlay for helmet
 
+    public LeverToSceneLoader leverToUnlock; // Reference to the lever script
+
     private Vector3 originalPosition;
     private bool isPressed = false;
 
@@ -91,6 +93,8 @@ public class SuitUpButton : MonoBehaviour
         if (helmetHudOverlay != null)
             helmetHudOverlay.SetActive(true);
 
+        // Unlock the lever after the suit-up process
+        leverToUnlock.UnlockLever();  // Unlock lever after tool is picked
         OrbitRepairGameManager.Instance?.SetPhase(OrbitRepairGameManager.Phase.GrabTool);
         Debug.Log("[SuitUpButton] Suit-up sequence complete!");
     }

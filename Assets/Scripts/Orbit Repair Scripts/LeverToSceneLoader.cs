@@ -27,6 +27,8 @@ public class LeverToSceneLoader : MonoBehaviour
     private float targetDownAngle;             // startAngle + fullDownAngle (normalized)
     private bool fired = false;
 
+    private bool leverUnlocked = false;        // Flag to track if the lever can be interacted with
+
     void Awake()
     {
         if (!leverPivot) leverPivot = transform;
@@ -34,6 +36,9 @@ public class LeverToSceneLoader : MonoBehaviour
 
         startAngle = GetAxisAngle(leverPivot.localEulerAngles, rotateAxis);
         targetDownAngle = Mathf.Repeat(startAngle + fullDownAngle, 360f);
+
+        // Initially disable lever (not interactable)
+        xrGrab.enabled = false;
     }
 
     void OnEnable()
@@ -55,7 +60,7 @@ public class LeverToSceneLoader : MonoBehaviour
 
     void Update()
     {
-        if (fired) return;
+        if (fired || !leverUnlocked) return;
 
         // If player holds it at bottom without releasing, still allow firing
         TryFireIfFullyDown();
@@ -72,6 +77,17 @@ public class LeverToSceneLoader : MonoBehaviour
                 }
             }
         }
+    }
+
+    // Method to unlock the lever after the tool is picked up
+    public void UnlockLever()
+    {
+        leverUnlocked = true;
+        // Enable lever interaction
+        if (xrGrab)
+            xrGrab.enabled = true;
+
+        Debug.Log("[LeverToSceneLoader] Lever unlocked and ready to be interacted with.");
     }
 
     void TryFireIfFullyDown()
@@ -132,7 +148,6 @@ public class LeverToSceneLoader : MonoBehaviour
             }
         }
 
-        // Once visually at the bottom, fire
         Fire();
     }
 

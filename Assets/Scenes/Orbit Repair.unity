@@ -8200,7 +8200,7 @@ GameObject:
   - component: {fileID: 1329914830}
   - component: {fileID: 1329914829}
   m_Layer: 5
-  m_Name: Text (TMP)
+  m_Name: TimerText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -8247,8 +8247,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: New Text
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 87a83e7d0e9b66249bea5c73f032bbba, type: 2}
+  m_sharedMaterial: {fileID: 5429585956256938039, guid: 87a83e7d0e9b66249bea5c73f032bbba, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -8272,8 +8272,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 50
-  m_fontSizeBase: 50
+  m_fontSize: 60
+  m_fontSizeBase: 60
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -14937,8 +14937,9 @@ MonoBehaviour:
   gameContent:
   - {fileID: 919132148340941129}
   - {fileID: 4015970325339410169}
-  background: {fileID: 0}
   playMenuMusicOnStart: 1
+  timeLimit: 180
+  timeLimitText: {fileID: 1329914829}
 --- !u!1 &2063164966
 GameObject:
   m_ObjectHideFlags: 0
