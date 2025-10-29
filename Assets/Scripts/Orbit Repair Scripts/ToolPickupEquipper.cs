@@ -5,8 +5,8 @@ public class ToolPickupEquipper : MonoBehaviour
 {
     // ---- Global lock/unlock (default: locked) ----
     private static bool pickupsUnlocked = false;
-    public static void UnlockAllPickups()  { pickupsUnlocked = true; }
-    public static void LockAllPickups()    { pickupsUnlocked = false; }
+    public static void UnlockAllPickups() { pickupsUnlocked = true; }
+    public static void LockAllPickups() { pickupsUnlocked = false; }
 
     [Header("Who can trigger pickup")]
     public string requiredTag = "Player";
@@ -19,10 +19,11 @@ public class ToolPickupEquipper : MonoBehaviour
     [Header("What should appear after pickup")]
     [Tooltip("Lever root to enable only after tool pickup. Keep INACTIVE at start.")]
     public GameObject leverRootToEnable;
+    public LeverToSceneLoader lever;
 
-    [Header("Optional SFX")]
-    public AudioSource sfxSource;
-    public AudioClip pickupSfx;
+    // [Header("Optional SFX")]
+    // public AudioSource sfxSource;
+    // public AudioClip pickupSfx;
 
     [Header("XR (optional)")]
     public XRSimpleInteractable xrInteractable;
@@ -66,33 +67,55 @@ public class ToolPickupEquipper : MonoBehaviour
     private void TryEquip()
     {
         if (done) return;
-        if (!pickupsUnlocked) return; // 🔒 Only after suit-up
+        if (!pickupsUnlocked) return;
 
         done = true;
 
-        // Activate in-hand tool
-        if (equippedTool) equippedTool.SetActive(true);
-
-        // ✅ Now reveal/enable the lever
-        if (leverRootToEnable) 
+        // --- Force show the in-hand tool and diagnose common issues ---
+        if (equippedTool)
         {
-            leverRootToEnable.SetActive(true);
+            // 1) make sure its whole parent chain is active
+            Transform t = equippedTool.transform;
+            bool hadInactiveParent = false;
+            while (t != null)
+            {
+                if (!t.gameObject.activeSelf) { hadInactiveParent = true; t.gameObject.SetActive(true); }
+                t = t.parent;
+            }
+            if (hadInactiveParent) Debug.LogWarning("[ToolPickupEquipper] One or more parents were inactive. Activated entire chain.");
 
-            // If lever script is on the same root, enable it too
-            var leverLoader = leverRootToEnable.GetComponent<LeverToSceneLoader>();
-            if (leverLoader) leverLoader.enabled = true;
+            // 2) activate the object itself
+            equippedTool.SetActive(true);
+
+            // 3) enable all renderers & colliders in case they were disabled
+            foreach (var r in equippedTool.GetComponentsInChildren<Renderer>(true))
+                r.enabled = true;
+            foreach (var c in equippedTool.GetComponentsInChildren<Collider>(true))
+                c.enabled = true;
+
+            // 4) sanity log
+            Debug.Log($"[ToolPickupEquipper] Equipped tool now activeInHierarchy={equippedTool.activeInHierarchy}");
+        }
+        else
+        {
+            Debug.LogError("[ToolPickupEquipper] 'equippedTool' is NOT assigned in the Inspector.");
         }
 
-        // Phase & narration
+        // ✅ reveal/enable the lever
+        if (leverRootToEnable)
+        {
+            if (!leverRootToEnable.activeSelf) leverRootToEnable.SetActive(true);
+            if (lever) lever.UnlockLever();
+            var leverLoader = leverRootToEnable.GetComponent<LeverToSceneLoader>();
+            if (leverLoader && !leverLoader.enabled) leverLoader.enabled = true;
+        }
+
         OrbitRepairSequenceDirector.Instance?.NotifyToolPicked();
         OrbitRepairGameManager.Instance?.SetPhase(OrbitRepairGameManager.Phase.ExitToSpace);
 
         if (AudioManager.instance != null)
             AudioManager.instance.PlayNarrationCue(AudioManager.NarrationCue.AfterToolPickup);
 
-        if (sfxSource && pickupSfx) sfxSource.PlayOneShot(pickupSfx);
-
-        // Remove / hide world tool
         if (destroyWorldTool) Destroy(gameObject);
         else gameObject.SetActive(false);
     }

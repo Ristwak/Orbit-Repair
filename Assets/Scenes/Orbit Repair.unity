@@ -5662,9 +5662,6 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 8733093507751517971, guid: 5eccbf4be2c00e94689ee8062e4e7276, type: 3}
       insertIndex: -1
       addedObject: {fileID: 943961621}
-    - targetCorrespondingSourceObject: {fileID: 8733093507751517971, guid: 5eccbf4be2c00e94689ee8062e4e7276, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 943961620}
   m_SourcePrefab: {fileID: 100100000, guid: 5eccbf4be2c00e94689ee8062e4e7276, type: 3}
 --- !u!1 &943961618 stripped
 GameObject:
@@ -5676,21 +5673,6 @@ Camera:
   m_CorrespondingSourceObject: {fileID: 7990873191231833673, guid: 5eccbf4be2c00e94689ee8062e4e7276, type: 3}
   m_PrefabInstance: {fileID: 943961617}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &943961620
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 943961618}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d97aceff501dcaa4dafc0142c94dbc28, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  moveSpeed: 5
-  cameraTransform: {fileID: 943961622}
-  selectedDirection: 1
 --- !u!114 &943961621
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6590,16 +6572,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f174a71fc69fff9489bba04f80b47a21, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  xrGrab: {fileID: 1012085568}
+  xrInteractable: {fileID: 1012085568}
   leverPivot: {fileID: 1012085561}
   rotateAxis: {x: 0, y: 1, z: 0}
   fullDownAngle: 80
+  rotateSpeedDegPerSec: 180
   downTolerance: 5
-  leverAnimator: {fileID: 0}
   sceneToLoad: Outer Space
   loadingScreen: {fileID: 996092930}
   enableMouseTest: 1
-  mouseSimSpeed: 90
 --- !u!4 &1012085561 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -1363235190732581464, guid: 871f7a0d074d6174bad67b8db116aa0e, type: 3}
@@ -6624,8 +6605,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.00017002916, y: 0.0010629891, z: 0.0002179673}
-  m_Center: {x: -0.0012504015, y: -5.8207675e-11, z: -0.00000668133}
+  m_Size: {x: 0.001526475, y: 0.0014599891, z: 0.00021796729}
+  m_Center: {x: -0.00057217875, y: -0.000033511966, z: -0.000006681327}
 --- !u!65 &1012085566
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -9491,11 +9472,11 @@ PrefabInstance:
     - target: {fileID: 2272792351538558091, guid: 12e7c6e2a052ca344a4b1b5616e1597c, type: 3}
       propertyPath: m_GestureEnded.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 943961620}
+      objectReference: {fileID: 943961621}
     - target: {fileID: 2272792351538558091, guid: 12e7c6e2a052ca344a4b1b5616e1597c, type: 3}
       propertyPath: m_GestureEnded.m_PersistentCalls.m_Calls.Array.data[1].m_Target
       value: 
-      objectReference: {fileID: 943961620}
+      objectReference: {fileID: 943961621}
     - target: {fileID: 2272792351538558091, guid: 12e7c6e2a052ca344a4b1b5616e1597c, type: 3}
       propertyPath: m_GesturePerformed.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
       value: 1
@@ -9515,11 +9496,11 @@ PrefabInstance:
     - target: {fileID: 2272792351538558091, guid: 12e7c6e2a052ca344a4b1b5616e1597c, type: 3}
       propertyPath: m_GesturePerformed.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 943961620}
+      objectReference: {fileID: 943961621}
     - target: {fileID: 2272792351538558091, guid: 12e7c6e2a052ca344a4b1b5616e1597c, type: 3}
       propertyPath: m_GesturePerformed.m_PersistentCalls.m_Calls.Array.data[1].m_Target
       value: 
-      objectReference: {fileID: 943961620}
+      objectReference: {fileID: 943961621}
     - target: {fileID: 2272792351538558091, guid: 12e7c6e2a052ca344a4b1b5616e1597c, type: 3}
       propertyPath: m_GesturePerformed.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
       value: MovePlayer
@@ -29379,8 +29360,7 @@ MonoBehaviour:
   equippedTool: {fileID: 1321138603583542406}
   destroyWorldTool: 1
   leverRootToEnable: {fileID: 1012085559}
-  sfxSource: {fileID: 0}
-  pickupSfx: {fileID: 0}
+  lever: {fileID: 1012085560}
   xrInteractable: {fileID: 7727807973592666085}
 --- !u!65 &7727807973592666084
 BoxCollider:
