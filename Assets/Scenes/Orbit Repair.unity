@@ -6009,7 +6009,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 686e4fa0d82beda429b73015ab86f63a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  buttonInteractable: {fileID: 0}
+  buttonInteractable: {fileID: 987626282}
   pressedPosition: {x: 0, y: -0.05, z: 0}
   pressDuration: 0.1
   suitParts:
@@ -6021,7 +6021,7 @@ MonoBehaviour:
   - {fileID: 6180939718892635803}
   - {fileID: 8420197396785906984}
   helmetHudOverlay: {fileID: 0}
-  leverToUnlock: {fileID: 0}
+  worldToolRoot: {fileID: 7670258753535543393}
 --- !u!114 &987626282
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6590,7 +6590,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f174a71fc69fff9489bba04f80b47a21, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  xrGrab: {fileID: 0}
+  xrGrab: {fileID: 1012085568}
   leverPivot: {fileID: 1012085561}
   rotateAxis: {x: 0, y: 1, z: 0}
   fullDownAngle: 80
@@ -10373,6 +10373,14 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7143353886403648717, guid: 12e7c6e2a052ca344a4b1b5616e1597c, type: 3}
+      propertyPath: m_GestureEnded.m_PersistentCalls.m_Calls.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7143353886403648717, guid: 12e7c6e2a052ca344a4b1b5616e1597c, type: 3}
+      propertyPath: m_GesturePerformed.m_PersistentCalls.m_Calls.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7143353886403648717, guid: 12e7c6e2a052ca344a4b1b5616e1597c, type: 3}
       propertyPath: m_GestureEnded.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 943961621}
@@ -12654,6 +12662,62 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1657611051}
   m_Mesh: {fileID: -5232625385128625204, guid: 45fa038a23fd42c4a9864dcc7727d087, type: 3}
+--- !u!1 &1732176156
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1732176158}
+  - component: {fileID: 1732176157}
+  m_Layer: 0
+  m_Name: SequenceDirector
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1732176157
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1732176156}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c8fa5e5ab740f0a459bf38442eb7cf3f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  step: 0
+  suitUpButtonRoot: {fileID: 987626276}
+  suitUpButtonInteractable: {fileID: 987626282}
+  suitUpButtonCollider: {fileID: 987626278}
+  worldToolRoot: {fileID: 7670258753535543393}
+  worldToolPickup: {fileID: 7727807973592666083}
+  leverRoot: {fileID: 1012085559}
+  leverLoader: {fileID: 1012085560}
+  leverInteractable: {fileID: 1012085568}
+  leverCollider: {fileID: 1012085566}
+  autoWire: 1
+  hardHideAtStart: 1
+--- !u!4 &1732176158
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1732176156}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1733373280
 GameObject:
   m_ObjectHideFlags: 0
@@ -29108,6 +29172,7 @@ GameObject:
   - component: {fileID: 1531339294628103233}
   - component: {fileID: 7727807973592666083}
   - component: {fileID: 7727807973592666084}
+  - component: {fileID: 7727807973592666085}
   m_Layer: 0
   m_Name: Screw Driver
   m_TagString: Tool
@@ -29313,9 +29378,10 @@ MonoBehaviour:
   requiredTag: Player
   equippedTool: {fileID: 1321138603583542406}
   destroyWorldTool: 1
+  leverRootToEnable: {fileID: 1012085559}
   sfxSource: {fileID: 0}
   pickupSfx: {fileID: 0}
-  xrInteractable: {fileID: 0}
+  xrInteractable: {fileID: 7727807973592666085}
 --- !u!65 &7727807973592666084
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -29337,6 +29403,108 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.12000108, y: 0.53798985, z: 0.3575617}
   m_Center: {x: 0, y: -0.18308422, z: -0.107538946}
+--- !u!114 &7727807973592666085
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7670258753535543393}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8a35f6cfbfba9b548aaa00d52cfe8a50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_InteractionManager: {fileID: 0}
+  m_Colliders: []
+  m_InteractionLayerMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_InteractionLayers:
+    m_Bits: 1
+  m_DistanceCalculationMode: 1
+  m_SelectMode: 0
+  m_FocusMode: 1
+  m_CustomReticle: {fileID: 0}
+  m_AllowGazeInteraction: 0
+  m_AllowGazeSelect: 0
+  m_OverrideGazeTimeToSelect: 0
+  m_GazeTimeToSelect: 0.5
+  m_OverrideTimeToAutoDeselectGaze: 0
+  m_TimeToAutoDeselectGaze: 3
+  m_AllowGazeAssistance: 0
+  m_FirstHoverEntered:
+    m_PersistentCalls:
+      m_Calls: []
+  m_LastHoverExited:
+    m_PersistentCalls:
+      m_Calls: []
+  m_HoverEntered:
+    m_PersistentCalls:
+      m_Calls: []
+  m_HoverExited:
+    m_PersistentCalls:
+      m_Calls: []
+  m_FirstSelectEntered:
+    m_PersistentCalls:
+      m_Calls: []
+  m_LastSelectExited:
+    m_PersistentCalls:
+      m_Calls: []
+  m_SelectEntered:
+    m_PersistentCalls:
+      m_Calls: []
+  m_SelectExited:
+    m_PersistentCalls:
+      m_Calls: []
+  m_FirstFocusEntered:
+    m_PersistentCalls:
+      m_Calls: []
+  m_LastFocusExited:
+    m_PersistentCalls:
+      m_Calls: []
+  m_FocusEntered:
+    m_PersistentCalls:
+      m_Calls: []
+  m_FocusExited:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Activated:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Deactivated:
+    m_PersistentCalls:
+      m_Calls: []
+  m_StartingHoverFilters: []
+  m_StartingSelectFilters: []
+  m_StartingInteractionStrengthFilters: []
+  m_OnFirstHoverEntered:
+    m_PersistentCalls:
+      m_Calls: []
+  m_OnLastHoverExited:
+    m_PersistentCalls:
+      m_Calls: []
+  m_OnHoverEntered:
+    m_PersistentCalls:
+      m_Calls: []
+  m_OnHoverExited:
+    m_PersistentCalls:
+      m_Calls: []
+  m_OnSelectEntered:
+    m_PersistentCalls:
+      m_Calls: []
+  m_OnSelectExited:
+    m_PersistentCalls:
+      m_Calls: []
+  m_OnSelectCanceled:
+    m_PersistentCalls:
+      m_Calls: []
+  m_OnActivate:
+    m_PersistentCalls:
+      m_Calls: []
+  m_OnDeactivate:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!4 &7729070775945664743
 Transform:
   m_ObjectHideFlags: 0
@@ -32243,3 +32411,4 @@ SceneRoots:
   - {fileID: 1576190193}
   - {fileID: 543450651891524833}
   - {fileID: 7727807973592666082}
+  - {fileID: 1732176158}

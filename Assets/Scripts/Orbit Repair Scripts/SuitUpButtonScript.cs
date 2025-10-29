@@ -1,19 +1,20 @@
 using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
-using UnityEngine.Events;
 
 public class SuitUpButton : MonoBehaviour
 {
     [Header("Button Interactivity")]
-    public XRBaseInteractable buttonInteractable;  // XR button component
-    public Vector3 pressedPosition = new Vector3(0f, -0.05f, 0f);  // Downward movement
-    public float pressDuration = 0.1f;  // Time to move down/up
+    public XRBaseInteractable buttonInteractable;
+    public Vector3 pressedPosition = new Vector3(0f, -0.05f, 0f);
+    public float pressDuration = 0.1f;
 
     [Header("Suiting Up")]
-    public GameObject[] suitParts;  // All suit parts to activate
-    public GameObject helmetHudOverlay;  // Optional HUD overlay for helmet
+    public GameObject[] suitParts;
+    public GameObject helmetHudOverlay;
 
-    public LeverToSceneLoader leverToUnlock; // Reference to the lever script
+    [Header("What should appear after suit-up")]
+    [Tooltip("Table tool (e.g., screwdriver). Keep INACTIVE at scene start.")]
+    public GameObject worldToolRoot;
 
     private Vector3 originalPosition;
     private bool isPressed = false;
@@ -21,83 +22,76 @@ public class SuitUpButton : MonoBehaviour
     void Awake()
     {
         if (!buttonInteractable) buttonInteractable = GetComponent<XRBaseInteractable>();
-        if (buttonInteractable)
-        {
-            buttonInteractable.selectEntered.AddListener(OnButtonPressed);
-        }
-
+        if (buttonInteractable) buttonInteractable.selectEntered.AddListener(OnButtonPressed);
         originalPosition = transform.localPosition;
     }
 
     void Update()
     {
-        // ✅ Mouse press simulation (for PC testing)
-        if (Input.GetMouseButtonDown(0))  // Left click
+        // Mouse test in Editor/PC
+        if (Input.GetMouseButtonDown(0) && !isPressed)
         {
-            // Raycast from camera center to simulate "pressing" button
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            if (Physics.Raycast(ray, out RaycastHit hit, 5f))  // Adjust distance as needed
+            if (Physics.Raycast(ray, out RaycastHit hit, 5f))
             {
-                if (hit.collider.gameObject == gameObject && !isPressed)
-                {
+                if (hit.collider && hit.collider.gameObject == gameObject)
                     OnButtonPressed(null);
-                }
             }
         }
     }
 
-    private void OnButtonPressed(SelectEnterEventArgs interactor)
+    private void OnButtonPressed(SelectEnterEventArgs _)
     {
         if (isPressed) return;
-
         isPressed = true;
+
         StartCoroutine(ButtonPressAnimation());
         SuitUpAll();
     }
 
     private System.Collections.IEnumerator ButtonPressAnimation()
     {
-        Vector3 targetPosition = originalPosition + pressedPosition;
-        float elapsedTime = 0f;
-
-        while (elapsedTime < pressDuration)
+        Vector3 target = originalPosition + pressedPosition;
+        float t = 0f;
+        while (t < pressDuration)
         {
-            transform.localPosition = Vector3.Lerp(originalPosition, targetPosition, elapsedTime / pressDuration);
-            elapsedTime += Time.deltaTime;
-            yield return null;
+            transform.localPosition = Vector3.Lerp(originalPosition, target, t / pressDuration);
+            t += Time.deltaTime; yield return null;
         }
-
-        transform.localPosition = targetPosition;
+        transform.localPosition = target;
         yield return new WaitForSeconds(0.2f);
 
-        elapsedTime = 0f;
-        while (elapsedTime < pressDuration)
+        t = 0f;
+        while (t < pressDuration)
         {
-            transform.localPosition = Vector3.Lerp(targetPosition, originalPosition, elapsedTime / pressDuration);
-            elapsedTime += Time.deltaTime;
-            yield return null;
+            transform.localPosition = Vector3.Lerp(target, originalPosition, t / pressDuration);
+            t += Time.deltaTime; yield return null;
         }
-
         transform.localPosition = originalPosition;
         isPressed = false;
+
+        // Lock button forever after first use
+        if (buttonInteractable) buttonInteractable.enabled = false;
+        var col = GetComponent<Collider>();
+        if (col) col.enabled = false;
     }
 
     private void SuitUpAll()
     {
-        foreach (var part in suitParts)
-        {
-            if (part != null)
-                part.SetActive(true);
-        }
+        // Show suit visuals
+        foreach (var part in suitParts) if (part) part.SetActive(true);
+        if (helmetHudOverlay) helmetHudOverlay.SetActive(true);
 
-        if (helmetHudOverlay != null)
-            helmetHudOverlay.SetActive(true);
+        // ✅ Show the table tool now (lever stays hidden)
+        if (worldToolRoot) worldToolRoot.SetActive(true);
 
-        // Unlock the lever after the suit-up process
-        leverToUnlock.UnlockLever();  // Unlock lever after tool is picked
+        // Allow tool pickup after suit-up
+        ToolPickupEquipper.UnlockAllPickups();
+
+        // Advance phase
         OrbitRepairGameManager.Instance?.SetPhase(OrbitRepairGameManager.Phase.GrabTool);
-        ToolPickupEquipper.UnlockAllPickups();  // ✅ allow tool pickup after suit-up
-        Debug.Log("[SuitUpButton] Suit-up sequence complete!");
         OrbitRepairSequenceDirector.Instance?.NotifySuitUpPressed();
+
+        Debug.Log("[SuitUpButton] Suit-up done → Tool enabled. Lever still locked.");
     }
 }

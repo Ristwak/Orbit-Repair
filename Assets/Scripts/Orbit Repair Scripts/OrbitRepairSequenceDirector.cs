@@ -1,9 +1,7 @@
-// File: OrbitRepairSequenceDirector.cs
 using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
 
-/// Controls the linear flow:
-/// 1) Press Suit-Up Button  -> 2) Pick Tool  -> 3) Pull Lever -> (loads exterior)
+[DefaultExecutionOrder(-200)] // run before most scripts
 public class OrbitRepairSequenceDirector : MonoBehaviour
 {
     public static OrbitRepairSequenceDirector Instance { get; private set; }
@@ -11,27 +9,28 @@ public class OrbitRepairSequenceDirector : MonoBehaviour
     public enum Step { SuitUpButton, PickTool, PullLever, Exterior, Done }
     [SerializeField] private Step step = Step.SuitUpButton;
 
-    [Header("References (Interior Scene)")]
-    [Tooltip("The physical button the player presses to suit up.")]
-    public GameObject suitUpButtonRoot;                    // parent of the button
-    public XRBaseInteractable suitUpButtonInteractable;    // optional, if using XRI
-    public Collider suitUpButtonCollider;                  // if you drive it via collider
+    [Header("References (Interior)")]
+    [Tooltip("Suit-up button root (parent object). Will be enabled ONLY in step: SuitUpButton.")]
+    public GameObject suitUpButtonRoot;
+    public XRSimpleInteractable suitUpButtonInteractable;
+    public Collider suitUpButtonCollider;
 
-    [Space(4)]
-    [Tooltip("World tool lying on table that triggers equip on pickup.")]
-    public GameObject worldToolRoot;                       // the table screwdriver (active only in PickTool step)
-    public ToolPickupEquipper worldToolPickup;             // the pickup script on the world tool
+    [Space(6)]
+    [Tooltip("World tool on table. Enabled ONLY in step: PickTool.")]
+    public GameObject worldToolRoot;
+    public ToolPickupEquipper worldToolPickup;
 
-    [Space(4)]
-    [Tooltip("Lever to open the hatch (loads next scene).")]
+    [Space(6)]
+    [Tooltip("Lever root. Enabled ONLY in step: PullLever.")]
     public GameObject leverRoot;
-    public LeverToSceneLoader leverLoader;                 // your LeverToSceneLoader script
-    public XRBaseInteractable leverInteractable;           // optional, if you use XRI events instead of angle check
-    public Collider leverCollider;                         // if you gate it via collider
+    public LeverToSceneLoader leverLoader;
+    public XRBaseInteractable leverInteractable;
+    public Collider leverCollider;
 
-    [Header("Optional")]
-    [Tooltip("Set true to try auto-wiring components from the assigned roots on Awake.")]
+    [Header("Options")]
     public bool autoWire = true;
+    [Tooltip("Force-hide tool & lever immediately in Awake, regardless of scene defaults.")]
+    public bool hardHideAtStart = true;
 
     void Awake()
     {
@@ -42,39 +41,46 @@ public class OrbitRepairSequenceDirector : MonoBehaviour
         {
             if (suitUpButtonRoot)
             {
-                if (!suitUpButtonInteractable) suitUpButtonInteractable = suitUpButtonRoot.GetComponent<XRBaseInteractable>();
+                if (!suitUpButtonInteractable) suitUpButtonInteractable = suitUpButtonRoot.GetComponent<XRSimpleInteractable>();
                 if (!suitUpButtonCollider)     suitUpButtonCollider     = suitUpButtonRoot.GetComponent<Collider>();
             }
-            if (worldToolRoot)
-            {
-                if (!worldToolPickup) worldToolPickup = worldToolRoot.GetComponent<ToolPickupEquipper>();
-            }
+            if (worldToolRoot && !worldToolPickup) worldToolPickup = worldToolRoot.GetComponent<ToolPickupEquipper>();
             if (leverRoot)
             {
-                if (!leverLoader)        leverLoader        = leverRoot.GetComponent<LeverToSceneLoader>();
-                if (!leverInteractable)  leverInteractable  = leverRoot.GetComponent<XRBaseInteractable>();
-                if (!leverCollider)      leverCollider      = leverRoot.GetComponent<Collider>();
+                if (!leverLoader)       leverLoader       = leverRoot.GetComponent<LeverToSceneLoader>();
+                if (!leverInteractable) leverInteractable = leverRoot.GetComponent<XRBaseInteractable>();
+                if (!leverCollider)     leverCollider     = leverRoot.GetComponent<Collider>();
             }
         }
+
+        if (hardHideAtStart)
+        {
+            SafeSetActive(worldToolRoot, false);
+            SafeSetActive(leverRoot, false);
+            if (leverLoader) leverLoader.enabled = false;
+            if (leverInteractable) leverInteractable.enabled = false;
+            if (leverCollider) leverCollider.enabled = false;
+        }
+
+        ApplyStepGates(); // do it NOW, before others' Start()
+        Debug.Log($"[SeqDirector] Awake -> step={step}. Tool active? {IsActive(worldToolRoot)}. Lever active? {IsActive(leverRoot)}.");
     }
 
-    void Start()
+    void OnEnable()
     {
+        // Re-assert gates in case something toggled during enable order
         ApplyStepGates();
     }
 
-    // ---- Public notifications called by your existing scripts ----
+    // --------- External notifications from your existing scripts ---------
 
     public void NotifySuitUpPressed()
     {
         if (step != Step.SuitUpButton) return;
         step = Step.PickTool;
 
-        // Permanently disable the button
         EnableButton(false);
-
-        // Allow tool pickup and show the world tool
-        if (worldToolRoot) worldToolRoot.SetActive(true);
+        SafeSetActive(worldToolRoot, true);
         ToolPickupEquipper.UnlockAllPickups();
 
         ApplyStepGates();
@@ -86,10 +92,7 @@ public class OrbitRepairSequenceDirector : MonoBehaviour
         if (step != Step.PickTool) return;
         step = Step.PullLever;
 
-        // Hide world tool if still present (safety)
-        if (worldToolRoot) worldToolRoot.SetActive(false);
-
-        // Now enable lever
+        SafeSetActive(worldToolRoot, false);
         EnableLever(true);
 
         ApplyStepGates();
@@ -101,44 +104,38 @@ public class OrbitRepairSequenceDirector : MonoBehaviour
         if (step != Step.PullLever) return;
         step = Step.Exterior;
 
-        // Optional: disable lever so it can't be re-used while loading
-        EnableLever(false);
-
-        Debug.Log("[SeqDirector] Lever pulled -> Loading exterior.");
-        // LeverToSceneLoader handles the scene load; nothing else here
+        EnableLever(false); // prevent re-use during load
+        Debug.Log("[SeqDirector] Lever pulled -> Loading exterior (Lever disabled).");
     }
 
-    // ---- Gating helpers ----
+    // ---------------- Gating core ----------------
     private void ApplyStepGates()
     {
         switch (step)
         {
             case Step.SuitUpButton:
-                // Only button active
                 EnableButton(true);
-                if (worldToolRoot) worldToolRoot.SetActive(false);
+                SafeSetActive(worldToolRoot, false);
                 EnableLever(false);
                 ToolPickupEquipper.LockAllPickups();
                 break;
 
             case Step.PickTool:
                 EnableButton(false);
-                if (worldToolRoot) worldToolRoot.SetActive(true);
+                SafeSetActive(worldToolRoot, true);
                 EnableLever(false);
                 ToolPickupEquipper.UnlockAllPickups();
                 break;
 
             case Step.PullLever:
                 EnableButton(false);
-                if (worldToolRoot) worldToolRoot.SetActive(false);
+                SafeSetActive(worldToolRoot, false);
                 EnableLever(true);
                 break;
 
-            case Step.Exterior:
-            case Step.Done:
-                // nothing in interior
+            default:
                 EnableButton(false);
-                if (worldToolRoot) worldToolRoot.SetActive(false);
+                SafeSetActive(worldToolRoot, false);
                 EnableLever(false);
                 break;
         }
@@ -146,18 +143,24 @@ public class OrbitRepairSequenceDirector : MonoBehaviour
 
     private void EnableButton(bool on)
     {
-        if (suitUpButtonRoot) suitUpButtonRoot.SetActive(on);
+        SafeSetActive(suitUpButtonRoot, on);
         if (suitUpButtonInteractable) suitUpButtonInteractable.enabled = on;
         if (suitUpButtonCollider) suitUpButtonCollider.enabled = on;
+        Debug.Log($"[SeqDirector] Button {(on ? "ENABLED" : "DISABLED")}");
     }
 
     private void EnableLever(bool on)
     {
-        if (leverRoot) leverRoot.SetActive(on);
+        SafeSetActive(leverRoot, on);
+        if (leverLoader) leverLoader.enabled = on;
         if (leverInteractable) leverInteractable.enabled = on;
         if (leverCollider) leverCollider.enabled = on;
-
-        // If your LeverToSceneLoader should be inert when off:
-        if (leverLoader) leverLoader.enabled = on;
+        Debug.Log($"[SeqDirector] Lever {(on ? "ENABLED" : "DISABLED")}");
     }
+
+    private static void SafeSetActive(GameObject go, bool on)
+    {
+        if (go && go.activeSelf != on) go.SetActive(on);
+    }
+    private static bool IsActive(GameObject go) => go && go.activeInHierarchy;
 }

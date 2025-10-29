@@ -1,4 +1,3 @@
-// File: ToolPickupEquipper.cs
 using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
 
@@ -10,7 +9,6 @@ public class ToolPickupEquipper : MonoBehaviour
     public static void LockAllPickups()    { pickupsUnlocked = false; }
 
     [Header("Who can trigger pickup")]
-    [Tooltip("Leave empty to accept any collider, or set to 'Player' / 'Hand' etc.")]
     public string requiredTag = "Player";
 
     [Header("Equip on pickup")]
@@ -18,13 +16,16 @@ public class ToolPickupEquipper : MonoBehaviour
     public GameObject equippedTool;
     public bool destroyWorldTool = true;
 
+    [Header("What should appear after pickup")]
+    [Tooltip("Lever root to enable only after tool pickup. Keep INACTIVE at start.")]
+    public GameObject leverRootToEnable;
+
     [Header("Optional SFX")]
     public AudioSource sfxSource;
     public AudioClip pickupSfx;
 
     [Header("XR (optional)")]
-    [Tooltip("If the world tool has XRBaseInteractable, pickup will also trigger on grab.")]
-    public XRBaseInteractable xrInteractable;
+    public XRSimpleInteractable xrInteractable;
 
     private bool done = false;
 
@@ -36,9 +37,9 @@ public class ToolPickupEquipper : MonoBehaviour
 
     void Awake()
     {
-        if (!xrInteractable) xrInteractable = GetComponent<XRBaseInteractable>();
+        if (!xrInteractable) xrInteractable = GetComponent<XRSimpleInteractable>();
         if (equippedTool && equippedTool.activeSelf)
-            equippedTool.SetActive(false); // keep hidden until suit-up
+            equippedTool.SetActive(false); // hidden until suit-up allows pickup
     }
 
     void OnEnable()
@@ -58,7 +59,6 @@ public class ToolPickupEquipper : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         if (done) return;
-
         if (string.IsNullOrEmpty(requiredTag) || other.CompareTag(requiredTag) || other.CompareTag("Hand"))
             TryEquip();
     }
@@ -66,27 +66,33 @@ public class ToolPickupEquipper : MonoBehaviour
     private void TryEquip()
     {
         if (done) return;
-
-        // 🔒 Block pickup until Suit Up has unlocked it
-        if (!pickupsUnlocked) return;
+        if (!pickupsUnlocked) return; // 🔒 Only after suit-up
 
         done = true;
 
+        // Activate in-hand tool
         if (equippedTool) equippedTool.SetActive(true);
-        OrbitRepairSequenceDirector.Instance?.NotifyToolPicked();
 
-        // Advance phase: GrabTool -> ExitToSpace
+        // ✅ Now reveal/enable the lever
+        if (leverRootToEnable) 
+        {
+            leverRootToEnable.SetActive(true);
+
+            // If lever script is on the same root, enable it too
+            var leverLoader = leverRootToEnable.GetComponent<LeverToSceneLoader>();
+            if (leverLoader) leverLoader.enabled = true;
+        }
+
+        // Phase & narration
+        OrbitRepairSequenceDirector.Instance?.NotifyToolPicked();
         OrbitRepairGameManager.Instance?.SetPhase(OrbitRepairGameManager.Phase.ExitToSpace);
 
-        // Narration
         if (AudioManager.instance != null)
-        {
             AudioManager.instance.PlayNarrationCue(AudioManager.NarrationCue.AfterToolPickup);
-            // Or: AudioManager.instance.PlayNarration(AudioManager.instance.afterToolPickupClip);
-        }
 
         if (sfxSource && pickupSfx) sfxSource.PlayOneShot(pickupSfx);
 
+        // Remove / hide world tool
         if (destroyWorldTool) Destroy(gameObject);
         else gameObject.SetActive(false);
     }
