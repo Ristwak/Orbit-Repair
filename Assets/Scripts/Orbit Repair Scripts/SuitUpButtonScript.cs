@@ -96,6 +96,8 @@ public class SuitUpButton : MonoBehaviour
         // Unlock the lever after the suit-up process
         leverToUnlock.UnlockLever();  // Unlock lever after tool is picked
         OrbitRepairGameManager.Instance?.SetPhase(OrbitRepairGameManager.Phase.GrabTool);
+        ToolPickupEquipper.UnlockAllPickups();  // ✅ allow tool pickup after suit-up
         Debug.Log("[SuitUpButton] Suit-up sequence complete!");
+        OrbitRepairSequenceDirector.Instance?.NotifySuitUpPressed();
     }
 }

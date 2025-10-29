@@ -6,7 +6,7 @@ using System.Collections;
 public class LeverToSceneLoader : MonoBehaviour
 {
     [Header("XR / Handle")]
-    public XRGrabInteractable xrGrab;          // Optional (for VR). If missing, mouse mode still works.
+    public XRSimpleInteractable xrGrab;          // Optional (for VR). If missing, mouse mode still works.
     public Transform leverPivot;               // Rotating part
     public Vector3 rotateAxis = Vector3.right; // Which local axis rotates
     [Tooltip("How many degrees from the start counts as FULLY DOWN (e.g., 70–90).")]
@@ -32,7 +32,7 @@ public class LeverToSceneLoader : MonoBehaviour
     void Awake()
     {
         if (!leverPivot) leverPivot = transform;
-        if (!xrGrab) xrGrab = GetComponent<XRGrabInteractable>();
+        if (!xrGrab) xrGrab = GetComponent<XRSimpleInteractable>();
 
         startAngle = GetAxisAngle(leverPivot.localEulerAngles, rotateAxis);
         targetDownAngle = Mathf.Repeat(startAngle + fullDownAngle, 360f);
@@ -108,6 +108,7 @@ public class LeverToSceneLoader : MonoBehaviour
     {
         if (fired) return;
         fired = true;
+        OrbitRepairSequenceDirector.Instance?.NotifyLeverPulled();
 
         if (leverAnimator) leverAnimator.SetTrigger("Pulled");
         Debug.Log("[LeverToSceneLoader] Lever fully down. Showing loading and opening scene: " + sceneToLoad);
