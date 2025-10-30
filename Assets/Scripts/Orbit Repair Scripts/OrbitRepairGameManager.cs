@@ -29,6 +29,9 @@ public class OrbitRepairGameManager : MonoBehaviour
     [Tooltip("Delay (sec) after narration finishes before showing the panel.")]
     public float panelDelay = 0.2f;
 
+    [Tooltip("All objects to hide when the Game Over panel appears (button, world tool, lever/hatch, etc.).")]
+    public GameObject[] hideOnGameOver;
+
     [Header("Restart (for the UI button)")]
     [Tooltip("If empty, RestartMission() reloads the current active scene.")]
     public string restartSceneName = "Orbit Repair";
@@ -95,10 +98,10 @@ public class OrbitRepairGameManager : MonoBehaviour
         timerRunning = false;
         SetPhase(Phase.Complete);
 
-        if (AudioManager.instance)
-            AudioManager.instance.PlayNarrationCue(AudioManager.NarrationCue.MissionComplete);
+        // Force play the "game-over" win narration over anything
+        ForcePlayGameOverNarration(success: true);
 
-        StartCoroutine(WaitForNarrationThenShowPanel());
+        StartCoroutine(WaitThenShowPanelOrRestart());
         Debug.Log("[OrbitRepairGameManager] Mission Complete!");
     }
 
@@ -108,16 +111,36 @@ public class OrbitRepairGameManager : MonoBehaviour
         ended = true;
         timerRunning = false;
 
-        if (AudioManager.instance)
-            AudioManager.instance.PlayNarrationCue(AudioManager.NarrationCue.MissionFail);
+        // Force play the "game-over" lose narration over anything
+        ForcePlayGameOverNarration(success: false);
 
-        StartCoroutine(WaitForNarrationThenShowPanel());
+        StartCoroutine(WaitThenShowPanelOrRestart());
         Debug.Log("[OrbitRepairGameManager] Mission Failed — Time Over!");
     }
 
-    private IEnumerator WaitForNarrationThenShowPanel()
+    /// <summary>
+    /// Interrupt any audio (music/SFX/narration) and play final game-over narration.
+    /// </summary>
+    private void ForcePlayGameOverNarration(bool success)
     {
-        // wait for narration (if any)
+        var am = AudioManager.instance;
+        if (am == null) return;
+
+        // Stop everything so game-over VO has priority
+        if (am.musicSource && am.musicSource.isPlaying) am.musicSource.Stop();
+        if (am.sfxSource && am.sfxSource.isPlaying) am.sfxSource.Stop();
+        if (am.narrationSource && am.narrationSource.isPlaying) am.narrationSource.Stop();
+
+        // Play correct final VO
+        if (success && am.missionCompleteClip)
+            am.PlayNarration(am.missionCompleteClip);
+        else if (!success && am.missionFailClip)
+            am.PlayNarration(am.missionFailClip);
+    }
+
+    private IEnumerator WaitThenShowPanelOrRestart()
+    {
+        // Wait for the final narration to finish if any
         var am = AudioManager.instance;
         if (am != null && am.narrationSource != null)
         {
@@ -128,10 +151,26 @@ public class OrbitRepairGameManager : MonoBehaviour
         if (panelDelay > 0f)
             yield return new WaitForSeconds(panelDelay);
 
-        if (gameOverPanel) gameOverPanel.SetActive(true);
+        // If there is a GameOver panel in this scene, show it and hide gameplay objects.
+        if (gameOverPanel != null && gameOverPanel.scene.IsValid() && gameOverPanel.scene == SceneManager.GetActiveScene())
+        {
+            // Hide interactive objects
+            if (hideOnGameOver != null)
+            {
+                foreach (var go in hideOnGameOver)
+                    if (go) go.SetActive(false);
+            }
+
+            gameOverPanel.SetActive(true);
+        }
+        else
+        {
+            // No panel available here — restart immediately to the Orbit Repair scene
+            RestartMission();
+        }
     }
 
-    // === UI Button Hooks ===
+    // === UI Button Hooks (wire these to the panel buttons) ===
     public void RestartMission()
     {
         string sceneToLoad = string.IsNullOrEmpty(restartSceneName)
