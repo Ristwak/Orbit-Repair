@@ -29362,6 +29362,12 @@ MonoBehaviour:
   leverRootToEnable: {fileID: 1012085559}
   lever: {fileID: 1012085560}
   xrInteractable: {fileID: 7727807973592666085}
+  enableMouseTest: 1
+  mouseRayDistance: 20
+  mouseRayMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  testCamera: {fileID: 943961619}
 --- !u!65 &7727807973592666084
 BoxCollider:
   m_ObjectHideFlags: 0

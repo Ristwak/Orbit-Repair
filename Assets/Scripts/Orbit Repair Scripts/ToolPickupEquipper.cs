@@ -1,3 +1,4 @@
+// File: ToolPickupEquipper.cs
 using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
 
@@ -6,7 +7,7 @@ public class ToolPickupEquipper : MonoBehaviour
     // ---- Global lock/unlock (default: locked) ----
     private static bool pickupsUnlocked = false;
     public static void UnlockAllPickups() { pickupsUnlocked = true; }
-    public static void LockAllPickups() { pickupsUnlocked = false; }
+    public static void LockAllPickups()  { pickupsUnlocked = false; }
 
     [Header("Who can trigger pickup")]
     public string requiredTag = "Player";
@@ -21,13 +22,20 @@ public class ToolPickupEquipper : MonoBehaviour
     public GameObject leverRootToEnable;
     public LeverToSceneLoader lever;
 
-    // [Header("Optional SFX")]
-    // public AudioSource sfxSource;
-    // public AudioClip pickupSfx;
+    //[Header("Optional SFX")]
+    //public AudioSource sfxSource;
+    //public AudioClip pickupSfx;
 
     [Header("XR (optional)")]
     public XRSimpleInteractable xrInteractable;
 
+    [Header("Mouse Testing")]
+    public bool enableMouseTest = true;            // allow desktop testing
+    public float mouseRayDistance = 6f;            // how far the ray can click
+    public LayerMask mouseRayMask = ~0;            // layers to hit (default: everything)
+    public Camera testCamera;                      // if null, uses Camera.main
+
+    private Collider myCollider;
     private bool done = false;
 
     void Reset()
@@ -39,8 +47,10 @@ public class ToolPickupEquipper : MonoBehaviour
     void Awake()
     {
         if (!xrInteractable) xrInteractable = GetComponent<XRSimpleInteractable>();
+        myCollider = GetComponent<Collider>();
+
         if (equippedTool && equippedTool.activeSelf)
-            equippedTool.SetActive(false); // hidden until suit-up allows pickup
+            equippedTool.SetActive(false); // keep hidden until suit-up unlocks
     }
 
     void OnEnable()
@@ -64,6 +74,27 @@ public class ToolPickupEquipper : MonoBehaviour
             TryEquip();
     }
 
+    void Update()
+    {
+        if (!enableMouseTest || done) return;
+        if (!Input.GetMouseButtonDown(0)) return;
+
+        Camera cam = testCamera ? testCamera : Camera.main;
+        if (!cam) return;
+
+        Ray ray = cam.ScreenPointToRay(Input.mousePosition);
+        if (Physics.Raycast(ray, out RaycastHit hit, mouseRayDistance, mouseRayMask, QueryTriggerInteraction.Collide))
+        {
+            // Accept the click if it hits this object or any of its children
+            if (hit.collider &&
+                (hit.collider.transform == transform || hit.collider.transform.IsChildOf(transform) ||
+                 (myCollider && hit.collider == myCollider)))
+            {
+                TryEquip();
+            }
+        }
+    }
+
     private void TryEquip()
     {
         if (done) return;
@@ -74,7 +105,6 @@ public class ToolPickupEquipper : MonoBehaviour
         // --- Force show the in-hand tool and diagnose common issues ---
         if (equippedTool)
         {
-            // 1) make sure its whole parent chain is active
             Transform t = equippedTool.transform;
             bool hadInactiveParent = false;
             while (t != null)
@@ -82,18 +112,14 @@ public class ToolPickupEquipper : MonoBehaviour
                 if (!t.gameObject.activeSelf) { hadInactiveParent = true; t.gameObject.SetActive(true); }
                 t = t.parent;
             }
-            if (hadInactiveParent) Debug.LogWarning("[ToolPickupEquipper] One or more parents were inactive. Activated entire chain.");
+            if (hadInactiveParent)
+                Debug.LogWarning("[ToolPickupEquipper] One or more parents were inactive. Activated entire chain.");
 
-            // 2) activate the object itself
             equippedTool.SetActive(true);
 
-            // 3) enable all renderers & colliders in case they were disabled
-            foreach (var r in equippedTool.GetComponentsInChildren<Renderer>(true))
-                r.enabled = true;
-            foreach (var c in equippedTool.GetComponentsInChildren<Collider>(true))
-                c.enabled = true;
+            foreach (var r in equippedTool.GetComponentsInChildren<Renderer>(true)) r.enabled = true;
+            foreach (var c in equippedTool.GetComponentsInChildren<Collider>(true)) c.enabled = true;
 
-            // 4) sanity log
             Debug.Log($"[ToolPickupEquipper] Equipped tool now activeInHierarchy={equippedTool.activeInHierarchy}");
         }
         else
@@ -101,7 +127,7 @@ public class ToolPickupEquipper : MonoBehaviour
             Debug.LogError("[ToolPickupEquipper] 'equippedTool' is NOT assigned in the Inspector.");
         }
 
-        // ✅ reveal/enable the lever
+        // Reveal/enable the lever
         if (leverRootToEnable)
         {
             if (!leverRootToEnable.activeSelf) leverRootToEnable.SetActive(true);
@@ -115,6 +141,8 @@ public class ToolPickupEquipper : MonoBehaviour
 
         if (AudioManager.instance != null)
             AudioManager.instance.PlayNarrationCue(AudioManager.NarrationCue.AfterToolPickup);
+
+        //if (sfxSource && pickupSfx) sfxSource.PlayOneShot(pickupSfx);
 
         if (destroyWorldTool) Destroy(gameObject);
         else gameObject.SetActive(false);
