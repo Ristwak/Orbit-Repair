@@ -331,8 +331,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e753aeb1e3a6344588c5d5865937a2f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gameOverPanel: {fileID: 576630024}
+  panelDelay: 0.2
   restartSceneName: Orbit Repair
-  reloadDelay: 0.2
 --- !u!4 &25222479
 Transform:
   m_ObjectHideFlags: 0
@@ -3416,10 +3417,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 642974f70f8045847946ff138b655eb1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  licenseKey: 12345678
-  projectName: Suit Up
-  scriptURL: 
+  licenseKey: 201
   subscriptionPanel: {fileID: 357616519}
+  vrCamera: {fileID: 1732279179478885371}
+  distanceFromCamera: 2
+  heightOffset: 0
 --- !u!1 &667404802
 GameObject:
   m_ObjectHideFlags: 0
@@ -18494,6 +18496,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 14cdae62b48ffd6499e066f930d6c0f1, type: 3}
+--- !u!4 &1732279179478885371 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 3223245922123305393, guid: 14cdae62b48ffd6499e066f930d6c0f1, type: 3}
+  m_PrefabInstance: {fileID: 1732279179478885370}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1750075841150330534
 GameObject:
   m_ObjectHideFlags: 0

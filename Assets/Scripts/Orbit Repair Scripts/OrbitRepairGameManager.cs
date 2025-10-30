@@ -1,3 +1,4 @@
+// File: OrbitRepairGameManager.cs
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.Collections;
@@ -17,16 +18,20 @@ public class OrbitRepairGameManager : MonoBehaviour
         Complete
     }
 
-    [Header("Mission Timer")]
+    [Header("Mission Timer (optional)")]
     // public float missionDuration = 180f; // 3 minutes
     private float timer = 0f;
     private bool timerRunning = false;
 
-    [Header("Restart")]
-    [Tooltip("Scene to load after win/lose narration finishes. Leave empty to reload the current active scene.")]
+    [Header("UI")]
+    [Tooltip("Game Over / Mission Complete panel shown after narration ends.")]
+    public GameObject gameOverPanel;
+    [Tooltip("Delay (sec) after narration finishes before showing the panel.")]
+    public float panelDelay = 0.2f;
+
+    [Header("Restart (for the UI button)")]
+    [Tooltip("If empty, RestartMission() reloads the current active scene.")]
     public string restartSceneName = "Orbit Repair";
-    [Tooltip("Extra delay after narration finishes before reloading (seconds).")]
-    public float reloadDelay = 0.2f;
 
     private Phase phase = Phase.PullLever;
     private bool ended = false;
@@ -34,6 +39,7 @@ public class OrbitRepairGameManager : MonoBehaviour
     void Awake()
     {
         Instance = this;
+        if (gameOverPanel) gameOverPanel.SetActive(false);
     }
 
     void Update()
@@ -56,14 +62,13 @@ public class OrbitRepairGameManager : MonoBehaviour
         switch (p)
         {
             case Phase.SuitUp:
-                // Start mission, play music + welcome narration
                 if (AudioManager.instance)
                 {
                     AudioManager.instance.PlayMusic(AudioManager.instance.gameMusic);
                     AudioManager.instance.PlayNarrationCue(AudioManager.NarrationCue.WelcomeSuitUp);
                 }
-                // Start mission timer
-                timer = OrbitRepairMenuUI.globalTimeLimit;
+                // Optional timer start
+                timer = OrbitRepairMenuUI.globalTimeLimit; // set by menu
                 timerRunning = true;
                 break;
 
@@ -93,7 +98,7 @@ public class OrbitRepairGameManager : MonoBehaviour
         if (AudioManager.instance)
             AudioManager.instance.PlayNarrationCue(AudioManager.NarrationCue.MissionComplete);
 
-        StartCoroutine(WaitForNarrationThenReload());
+        StartCoroutine(WaitForNarrationThenShowPanel());
         Debug.Log("[OrbitRepairGameManager] Mission Complete!");
     }
 
@@ -106,29 +111,38 @@ public class OrbitRepairGameManager : MonoBehaviour
         if (AudioManager.instance)
             AudioManager.instance.PlayNarrationCue(AudioManager.NarrationCue.MissionFail);
 
-        StartCoroutine(WaitForNarrationThenReload());
+        StartCoroutine(WaitForNarrationThenShowPanel());
         Debug.Log("[OrbitRepairGameManager] Mission Failed — Time Over!");
     }
 
-    private IEnumerator WaitForNarrationThenReload()
+    private IEnumerator WaitForNarrationThenShowPanel()
     {
-        // If we have a narration source, wait for it to finish
+        // wait for narration (if any)
         var am = AudioManager.instance;
         if (am != null && am.narrationSource != null)
         {
-            // Wait while a clip is playing
             while (am.narrationSource.isPlaying)
                 yield return null;
         }
 
-        if (reloadDelay > 0f)
-            yield return new WaitForSeconds(reloadDelay);
+        if (panelDelay > 0f)
+            yield return new WaitForSeconds(panelDelay);
 
-        // Reload the target scene (fallback to current scene if name is empty or invalid)
-        string sceneToLoad = restartSceneName;
-        if (string.IsNullOrEmpty(sceneToLoad))
-            sceneToLoad = SceneManager.GetActiveScene().name;
+        if (gameOverPanel) gameOverPanel.SetActive(true);
+    }
 
+    // === UI Button Hooks ===
+    public void RestartMission()
+    {
+        string sceneToLoad = string.IsNullOrEmpty(restartSceneName)
+            ? SceneManager.GetActiveScene().name
+            : restartSceneName;
         SceneManager.LoadScene(sceneToLoad);
+    }
+
+    public void QuitMission()
+    {
+        Debug.Log("Quit Game");
+        Application.Quit();
     }
 }
