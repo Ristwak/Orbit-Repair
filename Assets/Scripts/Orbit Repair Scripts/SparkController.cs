@@ -1,48 +1,89 @@
+// File: SparkController.cs
+using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class SparkController : MonoBehaviour
 {
-    public ParticleSystem sparkEffect;     // Assign your SparkFX here
-    public AudioSource audioSource;        // Assign an AudioSource
-    public AudioClip gameWinClip;          // Assign your “game win” sound
-    public float turnOffDelay = 2f;        // Seconds before spark stops
-    public float restartDelay = 5f;        // Seconds before restart
+    [Header("Detection")]
+    [Tooltip("Only objects with this tag can fix the box (e.g., your screwdriver).")]
+    public string toolTag = "Tool";
 
-    private bool repaired = false;
+    [Header("Effects")]
+    public ParticleSystem sparkEffect;      // assign your sparks here
+    public AudioSource audioSource;         // optional local source for fallback
 
-    private void Start()
+    [Header("Timing")]
+    [Tooltip("Seconds after the tool touches before the sparks stop.")]
+    public float turnOffDelay = 2f;
+    [Tooltip("Extra seconds to wait after the win audio finishes, before restart.")]
+    public float restartDelay = 2f;
+
+    [Header("Restart")]
+    [Tooltip("Scene to load after success (your main menu / start scene).")]
+    public string restartSceneName = "Orbit Repair";  // change if different
+
+    private bool fixedOnce = false;
+
+    private void Reset()
     {
-        // Make sure the spark is running initially
-        if (sparkEffect != null && !sparkEffect.isPlaying)
-            sparkEffect.Play();
+        // make the collider a trigger so collisions can fire without physics push
+        var col = GetComponent<Collider>();
+        if (col) col.isTrigger = true;
     }
 
-    private void OnCollisionEnter(Collision collision)
+    private void OnTriggerEnter(Collider other)
     {
-        if (repaired) return; // Prevent double triggers
+        if (fixedOnce) return;
+        if (!other.CompareTag(toolTag)) return;
 
-        if (collision.gameObject.CompareTag("Tool"))
+        fixedOnce = true;
+        StartCoroutine(FixRoutine());
+    }
+
+    private IEnumerator FixRoutine()
+    {
+        // small delay while the tool "works"
+        if (turnOffDelay > 0f)
+            yield return new WaitForSeconds(turnOffDelay);
+
+        // stop sparks
+        if (sparkEffect)
         {
-            repaired = true;
-            StartCoroutine(RepairSequence());
+            sparkEffect.Stop(true, ParticleSystemStopBehavior.StopEmitting);
+            // optionally hide immediately:
+            // var em = sparkEffect.emission; em.enabled = false;
         }
-    }
 
-    private System.Collections.IEnumerator RepairSequence()
-    {
-        // Wait before turning spark off
-        yield return new WaitForSeconds(turnOffDelay);
+        // play win/mission-complete audio
+        float clipLen = 0f;
+        bool played = false;
 
-        if (sparkEffect != null)
-            sparkEffect.Stop();
+        if (AudioManager.instance && AudioManager.instance.missionCompleteClip)
+        {
+            AudioManager.instance.PlayNarration(AudioManager.instance.missionCompleteClip);
+            clipLen = AudioManager.instance.missionCompleteClip.length;
+            played = true;
+        }
+        else if (audioSource && audioSource.clip)
+        {
+            audioSource.Stop();
+            audioSource.Play();
+            clipLen = audioSource.clip.length;
+            played = true;
+        }
 
-        // Play win sound
-        if (audioSource != null && gameWinClip != null)
-            audioSource.PlayOneShot(gameWinClip);
+        // wait for audio (if any)
+        if (played && clipLen > 0f)
+            yield return new WaitForSeconds(clipLen);
 
-        // Wait, then restart the scene
-        yield return new WaitForSeconds(restartDelay);
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        if (restartDelay > 0f)
+            yield return new WaitForSeconds(restartDelay);
+
+        // restart / go back
+        if (!string.IsNullOrEmpty(restartSceneName))
+            SceneManager.LoadScene(restartSceneName);
+        else
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex); // fallback
     }
 }

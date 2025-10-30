@@ -18,7 +18,7 @@ public class OrbitRepairGameManager : MonoBehaviour
     }
 
     [Header("Mission Timer")]
-    public float missionDuration = 180f; // 3 minutes
+    // public float missionDuration = 180f; // 3 minutes
     private float timer = 0f;
     private bool timerRunning = false;
 
@@ -63,7 +63,7 @@ public class OrbitRepairGameManager : MonoBehaviour
                     AudioManager.instance.PlayNarrationCue(AudioManager.NarrationCue.WelcomeSuitUp);
                 }
                 // Start mission timer
-                timer = missionDuration;
+                timer = OrbitRepairMenuUI.globalTimeLimit;
                 timerRunning = true;
                 break;
 
