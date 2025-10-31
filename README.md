@@ -144,22 +144,12 @@ Each interaction unlocks the next stage, guided by **narration, ambient cues, an
 
 ---
 
-## 🚀 Future Roadmap
-
-- Add **zero-gravity thruster movement** for full EVA freedom.  
-- Introduce **oxygen/time pressure mechanics** for difficulty scaling.  
-- Expand **SparkBox repair** into multi-step challenges.  
-- Add **voice-guided AI companion** for instruction and feedback.  
-- Support **multi-language localization**.
-
----
-
 ## 👨‍🚀 Credits
 
-Developed, designed, scripted, and produced by  
+Developed, scripted, and produced by  
 **🎖️ Ristwak Pandey**
 
-> I am the sole developer and rightful owner of this project and hold full authority over its design, logic, code, visuals, and distribution.
+> I am the sole developer and rightful owner of this project and hold full authority over its logic, code, visuals, and distribution.
 
 ---
 
