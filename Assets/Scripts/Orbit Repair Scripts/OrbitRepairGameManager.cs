@@ -19,9 +19,8 @@ public class OrbitRepairGameManager : MonoBehaviour
     }
 
     [Header("Mission Timer (optional)")]
-    // public float missionDuration = 180f; // 3 minutes
-    private float timer = 0f;
-    private bool timerRunning = false;
+    // Timer is driven by GameTimer; we don’t count here anymore.
+    private bool ended = false;
 
     [Header("UI")]
     [Tooltip("Game Over / Mission Complete panel shown after narration ends.")]
@@ -29,32 +28,52 @@ public class OrbitRepairGameManager : MonoBehaviour
     [Tooltip("Delay (sec) after narration finishes before showing the panel.")]
     public float panelDelay = 0.2f;
 
-    [Tooltip("All objects to hide when the Game Over panel appears (button, world tool, lever/hatch, etc.).")]
-    public GameObject[] hideOnGameOver;
+    [Header("Hide When Mission Ends (timeout or success)")]
+    [Tooltip("Assign objects that must disappear the moment the mission ends (timeout/success). " +
+             "E.g., SuitUp button, world/tool on table, hatch/lever root, spark root, etc.")]
+    public GameObject[] hideOnEnd;
 
     [Header("Restart (for the UI button)")]
     [Tooltip("If empty, RestartMission() reloads the current active scene.")]
     public string restartSceneName = "Orbit Repair";
 
     private Phase phase = Phase.PullLever;
-    private bool ended = false;
 
-    void Awake()
+    private void Awake()
     {
         Instance = this;
         if (gameOverPanel) gameOverPanel.SetActive(false);
+
+        // Subscribe to GameTimer timeout (safe even if Instance isn’t created yet; we try again at Start).
+        TryHookTimer();
     }
 
-    void Update()
+    private void Start()
     {
-        if (timerRunning && !ended)
+        // In case GameTimer spawned after us.
+        TryHookTimer();
+    }
+
+    private void OnDestroy()
+    {
+        if (GameTimer.Instance != null)
+            GameTimer.Instance.OnTimeUp -= HandleTimeUp;
+    }
+
+    private void TryHookTimer()
+    {
+        if (GameTimer.Instance != null)
         {
-            timer -= Time.deltaTime;
-            if (timer <= 0f)
-            {
-                MissionFail();
-            }
+            // Avoid double-subscribe
+            GameTimer.Instance.OnTimeUp -= HandleTimeUp;
+            GameTimer.Instance.OnTimeUp += HandleTimeUp;
         }
+    }
+
+    private void HandleTimeUp()
+    {
+        // Called by GameTimer when countdown hits zero
+        MissionFail();
     }
 
     public void SetPhase(Phase p)
@@ -70,9 +89,6 @@ public class OrbitRepairGameManager : MonoBehaviour
                     AudioManager.instance.PlayMusic(AudioManager.instance.gameMusic);
                     AudioManager.instance.PlayNarrationCue(AudioManager.NarrationCue.WelcomeSuitUp);
                 }
-                // Optional timer start
-                timer = OrbitRepairMenuUI.globalTimeLimit; // set by menu
-                timerRunning = true;
                 break;
 
             case Phase.GrabTool:
@@ -95,10 +111,12 @@ public class OrbitRepairGameManager : MonoBehaviour
     {
         if (ended) return;
         ended = true;
-        timerRunning = false;
         SetPhase(Phase.Complete);
 
-        // Force play the "game-over" win narration over anything
+        // Immediately hide gameplay interactables
+        HideGameplayObjects();
+
+        // Force game-over narration on top
         ForcePlayGameOverNarration(success: true);
 
         StartCoroutine(WaitThenShowPanelOrRestart());
@@ -109,13 +127,33 @@ public class OrbitRepairGameManager : MonoBehaviour
     {
         if (ended) return;
         ended = true;
-        timerRunning = false;
 
-        // Force play the "game-over" lose narration over anything
+        // Immediately hide gameplay interactables
+        HideGameplayObjects();
+
+        // Force game-over narration on top
         ForcePlayGameOverNarration(success: false);
 
         StartCoroutine(WaitThenShowPanelOrRestart());
         Debug.Log("[OrbitRepairGameManager] Mission Failed — Time Over!");
+    }
+
+    private void HideGameplayObjects()
+    {
+        if (hideOnEnd == null) return;
+
+        foreach (var go in hideOnEnd)
+        {
+            if (!go) continue;
+
+            // Stop any sparks if this object (or a child) has a ParticleSystem
+            foreach (var ps in go.GetComponentsInChildren<ParticleSystem>(true))
+            {
+                ps.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+            }
+
+            go.SetActive(false);
+        }
     }
 
     /// <summary>
@@ -151,21 +189,14 @@ public class OrbitRepairGameManager : MonoBehaviour
         if (panelDelay > 0f)
             yield return new WaitForSeconds(panelDelay);
 
-        // If there is a GameOver panel in this scene, show it and hide gameplay objects.
-        if (gameOverPanel != null && gameOverPanel.scene.IsValid() && gameOverPanel.scene == SceneManager.GetActiveScene())
+        // If there is a GameOver panel in this scene, show it; else restart to Orbit Repair scene.
+        if (gameOverPanel != null && gameOverPanel.scene.IsValid() &&
+            gameOverPanel.scene == SceneManager.GetActiveScene())
         {
-            // Hide interactive objects
-            if (hideOnGameOver != null)
-            {
-                foreach (var go in hideOnGameOver)
-                    if (go) go.SetActive(false);
-            }
-
             gameOverPanel.SetActive(true);
         }
         else
         {
-            // No panel available here — restart immediately to the Orbit Repair scene
             RestartMission();
         }
     }

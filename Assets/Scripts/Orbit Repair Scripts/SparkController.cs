@@ -6,84 +6,126 @@ using UnityEngine.SceneManagement;
 public class SparkController : MonoBehaviour
 {
     [Header("Detection")]
-    [Tooltip("Only objects with this tag can fix the box (e.g., your screwdriver).")]
     public string toolTag = "Tool";
 
     [Header("Effects")]
-    public ParticleSystem sparkEffect;      // assign your sparks here
-    public AudioSource audioSource;         // optional local source for fallback
+    public ParticleSystem sparkEffect;
+    public AudioSource audioSource; // fallback local source (set ignoreListenerPause in Awake)
 
     [Header("Timing")]
-    [Tooltip("Seconds after the tool touches before the sparks stop.")]
     public float turnOffDelay = 2f;
-    [Tooltip("Extra seconds to wait after the win audio finishes, before restart.")]
     public float restartDelay = 2f;
+    [Tooltip("Hard timeout (seconds) if we never detect audio has finished.")]
+    public float narrationWaitTimeout = 20f;
 
     [Header("Restart")]
-    [Tooltip("Scene to load after success (your main menu / start scene).")]
-    public string restartSceneName = "Orbit Repair";  // change if different
+    public string restartSceneName = "Orbit Repair";
 
     private bool fixedOnce = false;
 
-    private void Reset()
+    void Awake()
     {
-        // make the collider a trigger so collisions can fire without physics push
-        var col = GetComponent<Collider>();
-        if (col) col.isTrigger = true;
+        // Make sure our fallback source can play even if someone pauses AudioListener.
+        if (audioSource) audioSource.ignoreListenerPause = true;
     }
 
-    private void OnTriggerEnter(Collider other)
+    void Start()
+    {
+        Debug.Log("[SparkController] Active.");
+    }
+
+    void Reset()
+    {
+        // Ensure trigger + a kinematic RB so Unity will send trigger events
+        var col = GetComponent<Collider>();
+        if (col) col.isTrigger = true;
+
+        if (!TryGetComponent<Rigidbody>(out var rb))
+        {
+            rb = gameObject.AddComponent<Rigidbody>();
+            rb.isKinematic = true;
+        }
+    }
+
+    void OnTriggerEnter(Collider other)
     {
         if (fixedOnce) return;
         if (!other.CompareTag(toolTag)) return;
 
+        Debug.Log("[SparkController] Tool collision: " + other.name);
         fixedOnce = true;
         StartCoroutine(FixRoutine());
     }
 
-    private IEnumerator FixRoutine()
+    IEnumerator FixRoutine()
     {
-        // small delay while the tool "works"
-        if (turnOffDelay > 0f)
-            yield return new WaitForSeconds(turnOffDelay);
+        if (turnOffDelay > 0f) yield return new WaitForSeconds(turnOffDelay);
 
-        // stop sparks
+        // Stop sparks
         if (sparkEffect)
         {
             sparkEffect.Stop(true, ParticleSystemStopBehavior.StopEmitting);
-            // optionally hide immediately:
-            // var em = sparkEffect.emission; em.enabled = false;
+            Debug.Log("[SparkController] Sparks stopped.");
         }
 
-        // play win/mission-complete audio
-        float clipLen = 0f;
+        // ---- Play Mission Complete VO ----
+        float waited = 0f;
         bool played = false;
 
-        if (AudioManager.instance && AudioManager.instance.missionCompleteClip)
+        var am = AudioManager.instance;
+        if (am && am.missionCompleteClip)
         {
-            AudioManager.instance.PlayNarration(AudioManager.instance.missionCompleteClip);
-            clipLen = AudioManager.instance.missionCompleteClip.length;
+            // Give the VO priority
+            if (am.musicSource && am.musicSource.isPlaying) am.musicSource.Stop();
+            if (am.sfxSource && am.sfxSource.isPlaying) am.sfxSource.Stop();
+            if (am.narrationSource)
+            {
+                am.narrationSource.ignoreListenerPause = true; // ensure it plays even if the game gets paused elsewhere
+                if (am.narrationSource.isPlaying) am.narrationSource.Stop();
+            }
+
+            am.PlayNarration(am.missionCompleteClip);
             played = true;
+
+            // Wait while narration actually plays (with timeout)
+            if (am.narrationSource)
+            {
+                while (am.narrationSource.isPlaying && waited < narrationWaitTimeout)
+                {
+                    waited += Time.unscaledDeltaTime; // don’t be affected by timeScale
+                    yield return null;
+                }
+            }
+            else
+            {
+                // If there’s no narrationSource, fall back to clip length
+                yield return new WaitForSeconds(am.missionCompleteClip.length);
+            }
         }
         else if (audioSource && audioSource.clip)
         {
             audioSource.Stop();
             audioSource.Play();
-            clipLen = audioSource.clip.length;
             played = true;
+
+            // Wait for local clip
+            waited = 0f;
+            while (audioSource.isPlaying && waited < narrationWaitTimeout)
+            {
+                waited += Time.unscaledDeltaTime;
+                yield return null;
+            }
         }
 
-        // wait for audio (if any)
-        if (played && clipLen > 0f)
-            yield return new WaitForSeconds(clipLen);
+        // Optional small delay after audio
+        if (restartDelay > 0f) yield return new WaitForSeconds(restartDelay);
 
-        if (restartDelay > 0f)
-            yield return new WaitForSeconds(restartDelay);
+        // Restart
+        var sceneName = string.IsNullOrEmpty(restartSceneName)
+            ? SceneManager.GetActiveScene().name
+            : restartSceneName;
 
-        // restart / go back
-        if (!string.IsNullOrEmpty(restartSceneName))
-            SceneManager.LoadScene(restartSceneName);
-        else
-            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex); // fallback
+        Debug.Log("[SparkController] Restarting scene: " + sceneName);
+        SceneManager.LoadScene(sceneName);
     }
 }

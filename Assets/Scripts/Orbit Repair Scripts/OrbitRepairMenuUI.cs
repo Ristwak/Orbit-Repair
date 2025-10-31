@@ -1,13 +1,7 @@
+// File: OrbitRepairMenuUI.cs
 using UnityEngine;
 using TMPro;
 
-/// <summary>
-/// Menu controller for Orbit Repair:
-/// - Hides menu panels
-/// - Enables gameplay content
-/// - Starts mission with optional countdown timer
-/// - Plays Welcome narration
-/// </summary>
 public class OrbitRepairMenuUI : MonoBehaviour
 {
     public static OrbitRepairMenuUI instance;
@@ -20,17 +14,25 @@ public class OrbitRepairMenuUI : MonoBehaviour
     [Header("Audio (Optional)")]
     public bool playMenuMusicOnStart = true;
 
-    [Header("Timer (Optional)")]
-    public float timeLimit = 180f; // 3 minutes
+    [Header("Timer (UI only)")]
+    public float timeLimit = 180f; // seconds
     public TextMeshProUGUI timeLimitText;
-    public static float globalTimeLimit; // Static reference for other scripts
 
-    private static float timeRemaining;
-    private static bool isTimerRunning = false;
+    // For backward-compat with any old code referencing this:
+    public static float globalTimeLimit;
 
-    private void Awake()
+    private void Awake() => instance = this;
+
+    private void OnEnable()
     {
-        instance = this;
+        if (GameTimer.Instance != null)
+            GameTimer.Instance.OnTick += HandleTick;
+    }
+
+    private void OnDisable()
+    {
+        if (GameTimer.Instance != null)
+            GameTimer.Instance.OnTick -= HandleTick;
     }
 
     private void Start()
@@ -48,14 +50,11 @@ public class OrbitRepairMenuUI : MonoBehaviour
 
         // Optional: play menu music
         if (playMenuMusicOnStart && AudioManager.instance != null)
-        {
             AudioManager.instance.PlayMusic(AudioManager.instance.menuMusic);
-        }
 
-        // Initialize timer display
+        // Init timer display
         globalTimeLimit = timeLimit;
-        timeRemaining = timeLimit;
-        UpdateTimerUI();
+        SetTimerUI(timeLimit);
     }
 
     // ✅ Start button
@@ -70,56 +69,34 @@ public class OrbitRepairMenuUI : MonoBehaviour
                 if (content != null) content.SetActive(true);
         }
 
-        // Start mission
         StartMission();
     }
 
-    // ✅ Mission start logic
     private void StartMission()
     {
         Debug.Log("Mission started!");
 
-        // Start timer
-        timeRemaining = timeLimit;
-        isTimerRunning = true;
-        Debug.Log("Mission started! Time limit: " + timeRemaining + " seconds.");
+        // Start the shared timer (countdown)
+        if (GameTimer.Instance != null)
+            GameTimer.Instance.StartTimer(timeLimit);
 
         // Play welcome narration
         if (AudioManager.instance != null)
-        {
             AudioManager.instance.PlayNarration(AudioManager.instance.welcomeSuitupClip);
-        }
     }
 
-    private void Update()
+    private void HandleTick(float remaining)
     {
-        if (isTimerRunning)
-        {
-            if (timeRemaining > 0)
-            {
-                timeRemaining -= Time.deltaTime;
-                UpdateTimerUI();
-            }
-            else
-            {
-                // Time's up
-                timeRemaining = 0;
-                isTimerRunning = false;
-                UpdateTimerUI();
-                Debug.Log("Time’s up!");
-            }
-        }
+        SetTimerUI(remaining);
     }
 
     // ✅ Timer formatted as 00:00 (MM:SS)
-    private void UpdateTimerUI()
+    private void SetTimerUI(float seconds)
     {
-        if (timeLimitText != null)
-        {
-            int minutes = Mathf.FloorToInt(timeRemaining / 60);
-            int seconds = Mathf.FloorToInt(timeRemaining % 60);
-            timeLimitText.text = string.Format("{0:00}:{1:00}", minutes, seconds);
-        }
+        if (timeLimitText == null) return;
+        int minutes = Mathf.FloorToInt(seconds / 60f);
+        int secs    = Mathf.FloorToInt(seconds % 60f);
+        timeLimitText.text = $"{minutes:00}:{secs:00}";
     }
 
     public void OnAboutButton()

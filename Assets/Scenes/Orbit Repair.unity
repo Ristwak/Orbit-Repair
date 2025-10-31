@@ -333,6 +333,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gameOverPanel: {fileID: 576630024}
   panelDelay: 0.2
+  hideOnEnd:
+  - {fileID: 7670258753535543393}
+  - {fileID: 1012085559}
+  - {fileID: 987626276}
   restartSceneName: Orbit Repair
 --- !u!4 &25222479
 Transform:
@@ -10894,6 +10898,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 1837459983}
   - {fileID: 25222479}
   - {fileID: 2024929330}
   - {fileID: 2043992134}
@@ -13109,6 +13114,50 @@ Canvas:
   m_SortingLayerID: 0
   m_SortingOrder: 0
   m_TargetDisplay: 0
+--- !u!1 &1837459982
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1837459983}
+  - component: {fileID: 1837459984}
+  m_Layer: 0
+  m_Name: GameTimer
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1837459983
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1837459982}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 1.8200161, y: -1.5299098, z: 4.0158978}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1576190193}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1837459984
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1837459982}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: adef8fc618970bb488c9db8d61770d16, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1851720956
 GameObject:
   m_ObjectHideFlags: 0
@@ -14025,7 +14074,7 @@ MonoBehaviour:
   musicSource: {fileID: 2024929331}
   sfxSource: {fileID: 2024929331}
   narrationSource: {fileID: 2024929331}
-  menuMusic: {fileID: 0}
+  menuMusic: {fileID: 8300000, guid: a007dbf7757cf8f469584bda8e994547, type: 3}
   gameMusic: {fileID: 0}
   musicVolume: 0.6
   duckedMusicVolume: 0.25
@@ -14427,7 +14476,7 @@ MonoBehaviour:
   - {fileID: 919132148340941129}
   - {fileID: 4015970325339410169}
   playMenuMusicOnStart: 1
-  timeLimit: 10
+  timeLimit: 240
   timeLimitText: {fileID: 1135815040}
 --- !u!1 &2063164966
 GameObject:
