@@ -1,66 +1,83 @@
 # 🛰️ ORBIT REPAIR VR
 
-**Orbit Repair VR** is a hands-on virtual reality simulation that puts players in the role of an astronaut performing an emergency satellite repair mission outside a space station.  
-Blending education and immersion, it offers a cinematic, interactive journey through the challenges of orbital repair — teaching players timing, precision, and the importance of procedure in space.
+**Orbit Repair VR** is a fully interactive virtual reality simulation where players perform an emergency satellite repair outside a space station.  
+It combines cinematic storytelling, physics-based interaction, and real-time narration to recreate the challenges of a real astronaut’s Extra-Vehicular Activity (EVA).
 
 ---
 
 ## 🎮 Gameplay Overview
 
-- The mission begins **inside a spacecraft**, where the player activates the repair system.
-- The sequence of tasks follows a realistic space repair protocol:
-  1. **Press the Button** to initialize the mission.
-  2. **Pick up the Tool** (screwdriver) to prepare for EVA.
-  3. **Pull the Lever** to open the airlock hatch.
-  4. **Exit into Space** and locate the malfunctioning satellite.
-  5. **Repair the SparkBox** using the tool.
-  6. **Complete the Mission** and return safely.
+The experience begins **inside the spacecraft**, where the player follows a guided repair protocol.  
+Each mission step builds upon the last — ensuring players understand **order, precision, and timing**.
 
-Each interaction unlocks the next stage, guiding the player through logical progression and interactive storytelling.  
-The environment includes sound cues, visual feedback, and narrations that make every action feel authentic.
+### 🔧 Mission Steps
+
+1. **Press the Button** to initiate the repair protocol.  
+2. **Suit Up** and activate the helmet HUD.  
+3. **Pick Up the Tool** (screwdriver) to prepare for EVA.  
+4. **Pull the Lever** to open the airlock hatch.  
+5. **Exit into Space** and approach the damaged satellite.  
+6. **Repair the SparkBox** to restore satellite power.  
+7. **Hear the Victory Cue** and automatically restart for replay.
+
+Each interaction unlocks the next stage, guided by **narration, ambient cues, and visual feedback**.
 
 ---
 
-## ✨ Key Features
+## ✨ Key Features (2025 Edition)
 
-- **Sequential Mission Flow** – Complete each task step by step: button → tool → lever → repair.  
-- **Immersive VR Interactions** – Built using the XR Interaction Toolkit, compatible with hand tracking and controllers.  
-- **Physics-Based Environment** – Objects respond realistically within the space setting.  
-- **Mouse Interaction Mode** – Allows PC testing without a VR headset.  
-- **Dynamic Narration** – Mission prompts and success lines managed by a centralized audio system.  
-- **Cinematic Scene Transitions** – Smooth fade-in/out effects using a loading screen manager.  
-- **Mission Completion Logic** – Spark effects, mission audio, and automatic scene restart integrated via scripts.
+| Feature | Description |
+|----------|-------------|
+| 🖐️ **Hand + Ray Interactions** | All objects can be interacted with using **hand tracking** or **controller rays**. |
+| 🔩 **XRGrabInteractable Integration** | Tools, buttons, and levers now support both direct grabs and ray-based interaction. |
+| ⚙️ **Improved Collision Logic** | Optimized triggers ensure reliable detection in low-gravity environments. |
+| 🎧 **Persistent Audio System** | `AudioManager` now uses **DontDestroyOnLoad**, allowing cross-scene narration and music continuity. |
+| ⏱️ **Single Global Timer** | Centralized mission timer shared across all scripts to handle time-based success/failure. |
+| 🔇 **Play-Once Narration** | Each narration or music clip plays only once per session — no repetition or looping. |
+| ⚡ **Enhanced Spark System** | New collision-driven SparkBox logic that triggers mission completion audio before restart. |
+| 🖱️ **Mouse & PC Test Mode** | All interactions can be simulated via mouse input for PC debugging. |
 
 ---
 
 ## 🧩 Gameplay Flow
 
 ### 🪐 **Scene 1 – Space Station Interior**
-1. **Button Activation:**  
-   The player presses a glowing button to begin the mission.  
-   - Narration plays, system lights activate, and suit HUD appears.
-   - Tool pickup becomes available.
 
-2. **Tool Collection:**  
-   The screwdriver on the workstation can be grabbed or touched.  
-   - The tool disappears from the table.  
-   - An identical version appears in the player’s hand.  
-   - Lever activation becomes available.
+1. **Suit-Up Button Press**
+   - Pressable via hand or ray.  
+   - Plays “Welcome to Mission” narration.  
+   - Unlocks tool pickup.
 
-3. **Lever Interaction:**  
-   The player pulls the lever to open the airlock hatch.  
-   - Animation and sound play.  
-   - The scene transitions to the next environment: **Outer Space**.
+2. **Tool Pickup**
+   - Grab the screwdriver using XRGrabInteractable.  
+   - The tool disappears from the table and appears in the player’s hand.  
+   - Unlocks the lever for airlock activation.
+
+3. **Lever Activation**
+   - Pull the lever to open the airlock.  
+   - Scene transitions to **Outer Space** using the `LoadingScreen` fade.
 
 ---
 
 ### 🌌 **Scene 2 – Outer Space Repair**
-1. The player floats near the **SparkBox**, where a continuous spark effect simulates a damaged circuit.  
-2. When the player touches the box with the **screwdriver**, the following occurs:
-   - Short delay simulates repair work.  
-   - Sparks fade out gradually.  
-   - “Mission Complete” narration plays via the `AudioManager`.  
-   - A few seconds later, the game restarts for replay.
+
+1. **Approach the SparkBox**
+   - Sparks continuously emit to simulate a damaged circuit.
+
+2. **Repair Sequence**
+   - When the tool touches the SparkBox:
+     - Sparks fade after a short delay.  
+     - “Mission Complete” narration plays (cross-scene).  
+     - Scene restarts after narration ends.
+
+---
+
+## 🧠 Educational Objectives
+
+- Demonstrate **procedure-based learning** in a realistic space environment.  
+- Teach **sequencing, precision, and safety** in high-risk operations.  
+- Promote understanding of **satellite repair** and **EVA procedures**.  
+- Encourage **focus, timing, and calm under pressure**.
 
 ---
 
@@ -69,73 +86,80 @@ The environment includes sound cues, visual feedback, and narrations that make e
 | Component | Description |
 |------------|-------------|
 | **Engine** | Unity 2022.3 LTS (URP) |
-| **Framework** | XR Interaction Toolkit |
-| **Interaction Mode** | Hand tracking & controller support |
-| **Testing Mode** | Mouse-based collider interaction |
-| **Scenes** | `Orbit Repair` (station) & `Outer Space` (EVA repair zone) |
+| **Framework** | XR Interaction Toolkit + OpenXR |
+| **Input Modes** | Hand tracking, VR controllers, or mouse (debug) |
+| **Scenes** | `Orbit Repair` (interior) & `Outer Space` (EVA repair zone) |
+| **Audio System** | Persistent, non-repeating, cross-scene `AudioManager` |
+| **Physics** | Trigger-based collision system |
+| **Persistence** | AudioManager marked as `DontDestroyOnLoad` |
+| **Testing** | Mouse-click simulation for all major actions |
 
 ---
 
-## 🧠 Educational Objectives
+## 📜 Updated Script Summary
 
-- Demonstrate **procedure-based learning** through realistic VR tasks.  
-- Teach players **sequencing, precision, and safety** in a high-risk space environment.  
-- Foster understanding of **satellite repair concepts** and **EVA mission steps**.  
-- Encourage critical thinking and situational awareness through experiential learning.
-
----
-
-## 📜 Script Summary
-
-| Script | Function |
-|--------|-----------|
-| `OrbitRepairMenuUI.cs` | Manages main menu and game start logic |
-| `SuitUpButton.cs` | Handles button press animation and activation sequence |
-| `ToolPickupEquipper.cs` | Manages pickup logic, activates in-hand tool, unlocks lever |
-| `LeverToSceneLoader.cs` | Controls lever pull and transitions to the next scene |
-| `SparkController.cs` | Manages spark particle system, mission completion audio, and restart logic |
-| `AudioManager.cs` | Central audio system for music, narration, and mission cues |
-| `OrbitRepairGameManager.cs` | Tracks mission states and transitions |
-| `OrbitRepairSequenceDirector.cs` | Coordinates phase unlocking between tasks |
-| `LoadingScreen.cs` | Handles fade transitions during scene load |
+| Script | Purpose |
+|--------|----------|
+| **`AudioManager.cs`** | Centralized system for all audio cues, ensuring no repetition; persistent across scenes. |
+| **`GameTimer.cs`** | Global timer accessible to all mission scripts for countdown-based logic. |
+| **`OrbitRepairMenuUI.cs`** | Handles main menu, mission start, and time initialization. |
+| **`SuitUpButton.cs`** | Pressable with hand or ray; animates button and activates next mission stage. |
+| **`ToolPickupEquipper.cs`** | Enables realistic tool grabbing, activates in-hand tool, and unlocks lever. |
+| **`LeverToSceneLoader.cs`** | Controls lever pulling animation and scene transitions. |
+| **`OrbitRepairSequenceDirector.cs`** | Manages mission order (Button → Tool → Lever → Space). |
+| **`OrbitRepairGameManager.cs`** | Oversees game state, success/failure, and game-over UI logic. |
+| **`SparkController.cs`** | Handles spark deactivation, win narration, and delayed restart. |
+| **`LoadingScreen.cs`** | Smooth fade transition during scene loading. |
 
 ---
 
 ## 🧭 Mission Flow Summary
 
-> Press the button → pick up the tool → pull the lever → step into space → repair the SparkBox → hear the success cue → restart mission.
+> **Press the Button → Pick up the Tool → Pull the Lever → Repair the SparkBox → Hear the Mission Complete narration → Restart automatically**
+
+---
+
+## 🎧 Audio System Enhancements
+
+| Feature | Behavior |
+|----------|-----------|
+| 🎵 **Menu Music** | Loops continuously on main menu only. |
+| 🔈 **Narration Clips** | Play once per session and do not repeat. |
+| 🚀 **Cross-Scene Audio** | Win/Fail narrations persist across scene loads. |
+| 🎚️ **Music Ducking** | Music volume lowers automatically during narration playback. |
+| 🔊 **Forced Narration Mode** | `PlayNarrationForce()` overrides all audio for game-ending cues. |
 
 ---
 
 ## 📦 Requirements
 
 - **Unity Version:** 2022.3 LTS or later  
-- **Packages Needed:**
-  - XR Interaction Toolkit  
-  - TextMeshPro  
+- **Packages Required:**
+  - XR Interaction Toolkit (v3.x or newer)
   - OpenXR Plugin  
-- **Hardware:**  
+  - TextMeshPro  
+- **Hardware:**
   - Meta Quest / HTC Vive / OpenXR-compatible headset  
-  - Optional: PC mouse support for debugging
+  - Optional: mouse and keyboard for testing
 
 ---
 
-## 🗺️ Roadmap
+## 🚀 Future Roadmap
 
-- Add **zero-gravity movement mechanics** with limited thrust controls  
-- Introduce **repair time pressure** (oxygen or timer)  
-- Expand **SparkBox system** into multi-step repairs  
-- Add **voice-guided AI companion** for instructions  
-- Localize the experience for multiple languages  
+- Add **zero-gravity thruster movement** for full EVA freedom.  
+- Introduce **oxygen/time pressure mechanics** for difficulty scaling.  
+- Expand **SparkBox repair** into multi-step challenges.  
+- Add **voice-guided AI companion** for instruction and feedback.  
+- Support **multi-language localization**.
 
 ---
 
 ## 👨‍🚀 Credits
 
 Developed, designed, scripted, and produced by  
-**🎖️ Ristwak Pandey**  
+**🎖️ Ristwak Pandey**
 
-> I am the sole developer and rightful owner of this game and hold complete authority over its design, logic, code, visuals, and distribution.  
+> I am the sole developer and rightful owner of this project and hold full authority over its design, logic, code, visuals, and distribution.
 
 ---
 
@@ -149,7 +173,5 @@ Unauthorized reproduction, modification, or distribution of this project or its 
 
 ## 🪐 Closing Note
 
-> *Orbit Repair VR* isn’t just a game — it’s an interactive learning experience that brings players face-to-face with the challenges of working in space.  
-Through curiosity, precision, and calm under pressure, the player becomes not just a gamer — but a true orbital engineer.
-
----
+> *Orbit Repair VR* is not just a simulation — it’s a journey through the precision and patience of real orbital engineering.  
+Through immersive learning and guided interaction, players experience what it truly means to repair the future, one bolt at a time.
