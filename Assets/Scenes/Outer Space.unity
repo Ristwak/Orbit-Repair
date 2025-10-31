@@ -334,8 +334,9 @@ MonoBehaviour:
   toolTag: Tool
   sparkEffect: {fileID: 1148766974}
   audioSource: {fileID: 250547866}
-  turnOffDelay: 2
-  restartDelay: 3
+  turnOffDelay: 5
+  restartDelay: 5
+  narrationWaitTimeout: 20
   restartSceneName: Orbit Repair
 --- !u!82 &250547866
 AudioSource:
@@ -348,7 +349,7 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
-  m_PlayOnAwake: 1
+  m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
   Loop: 0

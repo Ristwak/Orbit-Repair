@@ -41,52 +41,59 @@ public class AudioManager : MonoBehaviour
 
     private void Awake()
     {
+        // Singleton w/ persistence across scenes
         if (instance != null && instance != this)
         {
             Destroy(gameObject);
             return;
         }
         instance = this;
-        // DontDestroyOnLoad(gameObject); // enable if you want persistence
+        DontDestroyOnLoad(gameObject);
+
+        // Hard-enforce non-looping for narration/SFX sources
+        if (narrationSource) narrationSource.loop = false;
+        if (sfxSource)       sfxSource.loop       = false;
+
+        // If musicSource exists but some inspector had loop=true, we'll override in PlayMusic per-clip
     }
 
     private void Start()
     {
-        // Menu music is allowed to loop / restart
+        // Menu music is the only one allowed to loop / restart
         PlayMusic(menuMusic);
     }
 
     // =========================
-    // MUSIC (play-once per clip, EXCEPT menuMusic)
+    // MUSIC (play-once per clip, EXCEPT menuMusic which loops)
     // =========================
     public void PlayMusic(AudioClip clip)
     {
-        if (musicSource == null || clip == null) return;
+        if (!musicSource || !clip) return;
 
-        // If this is NOT menu music, ensure it only plays once per session
         bool isMenu = (clip == menuMusic);
 
+        // prevent replay of the same non-menu track within the session
         if (!isMenu)
         {
-            // If we already played this non-menu track once, ignore further calls
             if (_playedNonMenuMusic.Contains(clip)) return;
             _playedNonMenuMusic.Add(clip);
         }
 
-        // Configure looping: ONLY menu music loops
-        musicSource.loop = isMenu;
-
-        // If the requested clip is already playing, do nothing (prevents restarts)
+        // If the requested clip is already playing, do nothing (prevents restart “loop”)
         if (musicSource.isPlaying && musicSource.clip == clip) return;
 
         musicSource.Stop();
         musicSource.clip = clip;
         musicSource.volume = musicVolume;
+
+        // ONLY menu music loops
+        musicSource.loop = isMenu;
+
         musicSource.Play();
     }
 
     // =========================
-    // SFX (no special restrictions; plays as requested)
+    // SFX (fire-and-forget)
     // =========================
     public void PlaySFX(AudioClip clip)
     {
@@ -100,18 +107,45 @@ public class AudioManager : MonoBehaviour
     {
         if (!narrationSource || !clip) return;
 
-        // Prevent re-playing the same narration more than once
+        // stop repeats: narration plays once per session
         if (_playedNarration.Contains(clip)) return;
         _playedNarration.Add(clip);
 
-        // Prepare music ducking
+        // prepare ducking
         if (duckMusicDuringNarration && musicSource)
         {
             if (duckRoutine != null) StopCoroutine(duckRoutine);
             duckRoutine = StartCoroutine(DuckMusicWhileNarration());
         }
 
+        // play narration once, no loop
+        narrationSource.loop = false;
         narrationSource.Stop();
+        narrationSource.clip = clip;
+        narrationSource.Play();
+    }
+
+    // Force version (e.g., final Game Over VO must override anything)
+    public void PlayNarrationForce(AudioClip clip)
+    {
+        if (!narrationSource || !clip) return;
+
+        // Stop everything underneath so this takes priority
+        if (musicSource && musicSource.isPlaying) musicSource.Stop();
+        if (sfxSource   && sfxSource.isPlaying)   sfxSource.Stop();
+        if (narrationSource.isPlaying)            narrationSource.Stop();
+
+        // We STILL respect “play once per session” to avoid repeated GOs if called twice
+        if (!_playedNarration.Contains(clip)) _playedNarration.Add(clip);
+
+        narrationSource.loop = false;
+
+        if (duckMusicDuringNarration && musicSource)
+        {
+            if (duckRoutine != null) StopCoroutine(duckRoutine);
+            duckRoutine = StartCoroutine(DuckMusicWhileNarration());
+        }
+
         narrationSource.clip = clip;
         narrationSource.Play();
     }
@@ -179,12 +213,10 @@ public class AudioManager : MonoBehaviour
         duckRoutine = null;
     }
 
-    // =========================
-    // OPTIONAL: Reset locks (e.g., for testing)
-    // =========================
+    // Optional: reset locks for testing (e.g., in editor)
     public void ResetPlayOnceLocks(bool resetNarration = true, bool resetNonMenuMusic = true)
     {
-        if (resetNarration) _playedNarration.Clear();
+        if (resetNarration)   _playedNarration.Clear();
         if (resetNonMenuMusic) _playedNonMenuMusic.Clear();
     }
 }

@@ -1,17 +1,17 @@
-// File: LeverToSceneLoader.cs
 using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
 using UnityEngine.SceneManagement;
+using System.Collections;
 
 public class LeverToSceneLoader : MonoBehaviour
 {
     [Header("XR / Handle (no rigidbody needed)")]
-    public XRSimpleInteractable xrInteractable;    // Put on the clickable handle
-    public Transform leverPivot;                   // Rotates visually
+    public XRSimpleInteractable xrInteractable;    // On the clickable handle object
+    public Transform leverPivot;                   // The object whose localEulerAngles rotate
     public Vector3 rotateAxis = Vector3.right;     // Local axis to rotate around
     [Range(0, 180f)] public float fullDownAngle = 80f;
-    public float rotateSpeedDegPerSec = 180f;      // Pull speed while held
-    public float downTolerance = 5f;               // How close counts as "down"
+    public float rotateSpeedDegPerSec = 180f;      // How fast lever moves while selected
+    public float downTolerance = 5f;               // How close to target counts as "down"
 
     [Header("Scene Loading")]
     public string sceneToLoad = "ExteriorSpace";
@@ -35,7 +35,7 @@ public class LeverToSceneLoader : MonoBehaviour
         startAngle      = GetAxisAngle(leverPivot.localEulerAngles, rotateAxis);
         targetDownAngle = Mathf.Repeat(startAngle + fullDownAngle, 360f);
 
-        // start locked
+        // start locked: no interaction
         if (xrInteractable) xrInteractable.enabled = false;
     }
 
@@ -61,7 +61,7 @@ public class LeverToSceneLoader : MonoBehaviour
     {
         if (fired || !leverUnlocked) return;
 
-        // While selected: go to DOWN; otherwise: relax to START
+        // While selected, drive the lever toward DOWN. When not selected, relax back toward START.
         float current = GetAxisAngle(leverPivot.localEulerAngles, rotateAxis);
         float target  = isSelected ? targetDownAngle : startAngle;
 
@@ -74,7 +74,7 @@ public class LeverToSceneLoader : MonoBehaviour
             current = next;
         }
 
-        // Fire once lever reaches bottom
+        // Fire once we’re at the bottom
         if (Mathf.Abs(Mathf.DeltaAngle(current, targetDownAngle)) <= downTolerance)
         {
             Fire();
@@ -84,7 +84,7 @@ public class LeverToSceneLoader : MonoBehaviour
         if (enableMouseTest && Input.GetMouseButtonDown(0))
         {
             var cam = Camera.main;
-            if (cam && Physics.Raycast(cam.ScreenPointToRay(Input.mousePosition), out var hit, 100f, ~0, QueryTriggerInteraction.Collide))
+            if (cam && Physics.Raycast(cam.ScreenPointToRay(Input.mousePosition), out var hit, 100f))
             {
                 if (hit.collider && (hit.collider.transform == transform || hit.collider.transform.IsChildOf(transform)))
                     isSelected = true;
@@ -96,7 +96,7 @@ public class LeverToSceneLoader : MonoBehaviour
     void OnSelectEntered(SelectEnterEventArgs _)
     {
         if (!leverUnlocked || fired) return;
-        isSelected = true; // works for ray and direct interactor
+        isSelected = true;
     }
 
     void OnSelectExited(SelectExitEventArgs _)

@@ -2,7 +2,6 @@
 using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
 
-[RequireComponent(typeof(Collider))]
 public class ToolPickupEquipper : MonoBehaviour
 {
     // ---- Global lock/unlock (default: locked) ----
@@ -11,7 +10,6 @@ public class ToolPickupEquipper : MonoBehaviour
     public static void LockAllPickups()  { pickupsUnlocked = false; }
 
     [Header("Who can trigger pickup")]
-    [Tooltip("Optional additional trigger via tag (e.g., 'Player' / 'Hand'). Leave empty to ignore tag checks.")]
     public string requiredTag = "Player";
 
     [Header("Equip on pickup")]
@@ -29,8 +27,7 @@ public class ToolPickupEquipper : MonoBehaviour
     //public AudioClip pickupSfx;
 
     [Header("XR (optional)")]
-    [Tooltip("Put XRGrabInteractable on the WORLD tool so hand or ray can grab. Auto-found if left empty.")]
-    public XRGrabInteractable xrInteractable;
+    public XRSimpleInteractable xrInteractable;
 
     [Header("Mouse Testing")]
     public bool enableMouseTest = true;            // allow desktop testing
@@ -44,17 +41,16 @@ public class ToolPickupEquipper : MonoBehaviour
     void Reset()
     {
         var col = GetComponent<Collider>();
-        col.isTrigger = true; // pickup via trigger, not physics push
+        if (col) col.isTrigger = true;
     }
 
     void Awake()
     {
-        if (!xrInteractable) xrInteractable = GetComponent<XRGrabInteractable>();
+        if (!xrInteractable) xrInteractable = GetComponent<XRSimpleInteractable>();
         myCollider = GetComponent<Collider>();
 
-        // Make sure the in-hand tool is hidden at start
         if (equippedTool && equippedTool.activeSelf)
-            equippedTool.SetActive(false);
+            equippedTool.SetActive(false); // keep hidden until suit-up unlocks
     }
 
     void OnEnable()
@@ -69,19 +65,15 @@ public class ToolPickupEquipper : MonoBehaviour
             xrInteractable.selectEntered.RemoveListener(OnGrabbed);
     }
 
-    // XR hand OR ray grab path
     private void OnGrabbed(SelectEnterEventArgs _) => TryEquip();
 
-    // Optional trigger path (e.g., controller/hand collider touch)
     private void OnTriggerEnter(Collider other)
     {
         if (done) return;
-
         if (string.IsNullOrEmpty(requiredTag) || other.CompareTag(requiredTag) || other.CompareTag("Hand"))
             TryEquip();
     }
 
-    // Mouse click test path (desktop)
     void Update()
     {
         if (!enableMouseTest || done) return;
@@ -93,10 +85,10 @@ public class ToolPickupEquipper : MonoBehaviour
         Ray ray = cam.ScreenPointToRay(Input.mousePosition);
         if (Physics.Raycast(ray, out RaycastHit hit, mouseRayDistance, mouseRayMask, QueryTriggerInteraction.Collide))
         {
+            // Accept the click if it hits this object or any of its children
             if (hit.collider &&
-               (hit.collider.transform == transform ||
-                hit.collider.transform.IsChildOf(transform) ||
-                (myCollider && hit.collider == myCollider)))
+                (hit.collider.transform == transform || hit.collider.transform.IsChildOf(transform) ||
+                 (myCollider && hit.collider == myCollider)))
             {
                 TryEquip();
             }
@@ -106,30 +98,33 @@ public class ToolPickupEquipper : MonoBehaviour
     private void TryEquip()
     {
         if (done) return;
-        if (!pickupsUnlocked) return; // locked until suit-up
+        if (!pickupsUnlocked) return;
 
         done = true;
 
-        // --- Force show the in-hand tool (and any disabled parents/renderers) ---
+        // --- Force show the in-hand tool and diagnose common issues ---
         if (equippedTool)
         {
             Transform t = equippedTool.transform;
+            bool hadInactiveParent = false;
             while (t != null)
             {
-                if (!t.gameObject.activeSelf) t.gameObject.SetActive(true);
+                if (!t.gameObject.activeSelf) { hadInactiveParent = true; t.gameObject.SetActive(true); }
                 t = t.parent;
             }
+            if (hadInactiveParent)
+                Debug.LogWarning("[ToolPickupEquipper] One or more parents were inactive. Activated entire chain.");
 
             equippedTool.SetActive(true);
 
             foreach (var r in equippedTool.GetComponentsInChildren<Renderer>(true)) r.enabled = true;
             foreach (var c in equippedTool.GetComponentsInChildren<Collider>(true)) c.enabled = true;
 
-            Debug.Log($"[ToolPickupEquipper] Equipped tool NOW activeInHierarchy={equippedTool.activeInHierarchy}");
+            Debug.Log($"[ToolPickupEquipper] Equipped tool now activeInHierarchy={equippedTool.activeInHierarchy}");
         }
         else
         {
-            Debug.LogError("[ToolPickupEquipper] 'equippedTool' is NOT assigned.");
+            Debug.LogError("[ToolPickupEquipper] 'equippedTool' is NOT assigned in the Inspector.");
         }
 
         // Reveal/enable the lever
@@ -147,7 +142,7 @@ public class ToolPickupEquipper : MonoBehaviour
         if (AudioManager.instance != null)
             AudioManager.instance.PlayNarrationCue(AudioManager.NarrationCue.AfterToolPickup);
 
-        // if (sfxSource && pickupSfx) sfxSource.PlayOneShot(pickupSfx);
+        //if (sfxSource && pickupSfx) sfxSource.PlayOneShot(pickupSfx);
 
         if (destroyWorldTool) Destroy(gameObject);
         else gameObject.SetActive(false);
