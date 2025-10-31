@@ -1,4 +1,3 @@
-// File: GameTimer.cs
 using System;
 using UnityEngine;
 
@@ -16,7 +15,7 @@ public class GameTimer : MonoBehaviour
     {
         if (Instance && Instance != this) { Destroy(gameObject); return; }
         Instance = this;
-        // Optional: DontDestroyOnLoad(gameObject);
+        DontDestroyOnLoad(gameObject); // ✅ persist timer across scene loads
     }
 
     void Update()
@@ -40,19 +39,16 @@ public class GameTimer : MonoBehaviour
     public void StartTimer(float seconds)
     {
         remaining = Mathf.Max(0f, seconds);
-        running = remaining > 0f;
+        running   = remaining > 0f;
         OnTick?.Invoke(remaining);
         if (!running) OnTimeUp?.Invoke();
     }
 
-    public void StopTimer()
-    {
-        running = false;
-    }
+    public void StopTimer() => running = false;
 
     public void ResetTimer(float seconds)
     {
-        running = false;
+        running   = false;
         remaining = Mathf.Max(0f, seconds);
         OnTick?.Invoke(remaining);
     }

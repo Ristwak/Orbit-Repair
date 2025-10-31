@@ -1554,8 +1554,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Size: {x: 1, y: 0.40371674, z: 1}
+  m_Center: {x: 0, y: -0.2981419, z: 0}
 --- !u!23 &401702816
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -2949,8 +2949,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 25222478}
-        m_TargetAssemblyTypeName: MainMenuUI, Assembly-CSharp
+      - m_Target: {fileID: 2043992135}
+        m_TargetAssemblyTypeName: OrbitRepairMenuUI, Assembly-CSharp
         m_MethodName: OnExitButton
         m_Mode: 1
         m_Arguments:
@@ -4044,8 +4044,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Size: {x: 1, y: 0.558933, z: 1}
+  m_Center: {x: 0, y: -0.22053395, z: 0}
 --- !u!23 &771067498
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -13395,8 +13395,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Size: {x: 1, y: 0.6494865, z: 1}
+  m_Center: {x: 0, y: -0.17525752, z: 0}
 --- !u!23 &1870434369
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -14299,8 +14299,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 25222478}
-        m_TargetAssemblyTypeName: MainMenuUI, Assembly-CSharp
+      - m_Target: {fileID: 2043992135}
+        m_TargetAssemblyTypeName: OrbitRepairMenuUI, Assembly-CSharp
         m_MethodName: OnRestartButton
         m_Mode: 1
         m_Arguments:
