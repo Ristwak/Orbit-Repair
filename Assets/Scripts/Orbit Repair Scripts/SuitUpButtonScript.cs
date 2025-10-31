@@ -1,12 +1,19 @@
 using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
 
+[RequireComponent(typeof(Collider))]
 public class SuitUpButton : MonoBehaviour
 {
     [Header("Button Interactivity")]
-    public XRBaseInteractable buttonInteractable;
+    public XRBaseInteractable buttonInteractable;          // XR (ray/direct)
     public Vector3 pressedPosition = new Vector3(0f, -0.05f, 0f);
     public float pressDuration = 0.1f;
+
+    [Header("Hand Touch Press (optional)")]
+    [Tooltip("If true, a collider tagged 'Hand' touching this button will press it once.")]
+    public bool allowHandTouchPress = true;
+    [Tooltip("Tags that can press by touch (add your hand/controller tags here).")]
+    public string[] handPressTags = new[] { "Hand", "LeftHand", "RightHand" };
 
     [Header("Suiting Up")]
     public GameObject[] suitParts;
@@ -17,40 +24,78 @@ public class SuitUpButton : MonoBehaviour
     public GameObject worldToolRoot;
 
     private Vector3 originalPosition;
-    private bool isPressed = false;
+    private bool isPressedAnimating = false;
+    private bool usedOnce = false;
 
     void Awake()
     {
+        // Collider for hand-touch detection
+        var col = GetComponent<Collider>();
+        col.isTrigger = true; // so hand touch doesn’t push it physically
+
         if (!buttonInteractable) buttonInteractable = GetComponent<XRBaseInteractable>();
-        if (buttonInteractable) buttonInteractable.selectEntered.AddListener(OnButtonPressed);
+        if (buttonInteractable) buttonInteractable.selectEntered.AddListener(OnXRPressed);
+
         originalPosition = transform.localPosition;
     }
 
-    void Update()
+    void OnDestroy()
     {
-        // Mouse test in Editor/PC
-        if (Input.GetMouseButtonDown(0) && !isPressed)
+        if (buttonInteractable) buttonInteractable.selectEntered.RemoveListener(OnXRPressed);
+    }
+
+    // XR press via ray/direct
+    private void OnXRPressed(SelectEnterEventArgs _)
+    {
+        TryPressOnce();
+    }
+
+    // Hand touch press
+    void OnTriggerEnter(Collider other)
+    {
+        if (!allowHandTouchPress || usedOnce) return;
+        if (!other) return;
+
+        // Accept any of the allowed tags
+        for (int i = 0; i < handPressTags.Length; i++)
         {
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            if (Physics.Raycast(ray, out RaycastHit hit, 5f))
+            if (other.CompareTag(handPressTags[i]))
             {
-                if (hit.collider && hit.collider.gameObject == gameObject)
-                    OnButtonPressed(null);
+                TryPressOnce();
+                return;
             }
         }
     }
 
-    private void OnButtonPressed(SelectEnterEventArgs _)
+    // Mouse test in Editor/PC
+    void Update()
     {
-        if (isPressed) return;
-        isPressed = true;
+        if (usedOnce || isPressedAnimating) return;
+
+        if (Input.GetMouseButtonDown(0))
+        {
+            Ray ray = Camera.main ? Camera.main.ScreenPointToRay(Input.mousePosition) : new Ray(Vector3.zero, Vector3.forward);
+            if (Physics.Raycast(ray, out RaycastHit hit, 5f))
+            {
+                if (hit.collider && (hit.collider.gameObject == gameObject))
+                    TryPressOnce();
+            }
+        }
+    }
+
+    private void TryPressOnce()
+    {
+        if (usedOnce || isPressedAnimating) return;
+        usedOnce = true;
 
         StartCoroutine(ButtonPressAnimation());
-        SuitUpAll();
+        DoSuitUpEffects();
     }
 
     private System.Collections.IEnumerator ButtonPressAnimation()
     {
+        isPressedAnimating = true;
+
         Vector3 target = originalPosition + pressedPosition;
         float t = 0f;
         while (t < pressDuration)
@@ -68,27 +113,30 @@ public class SuitUpButton : MonoBehaviour
             t += Time.deltaTime; yield return null;
         }
         transform.localPosition = originalPosition;
-        isPressed = false;
 
-        // Lock button forever after first use
+        // Hard-lock interactivity after first use
         if (buttonInteractable) buttonInteractable.enabled = false;
         var col = GetComponent<Collider>();
         if (col) col.enabled = false;
+
+        isPressedAnimating = false;
     }
 
-    private void SuitUpAll()
+    private void DoSuitUpEffects()
     {
         // Show suit visuals
-        foreach (var part in suitParts) if (part) part.SetActive(true);
+        if (suitParts != null)
+            foreach (var part in suitParts) if (part) part.SetActive(true);
+
         if (helmetHudOverlay) helmetHudOverlay.SetActive(true);
 
-        // ✅ Show the table tool now (lever stays hidden)
+        // Enable world tool now (lever stays hidden here)
         if (worldToolRoot) worldToolRoot.SetActive(true);
 
         // Allow tool pickup after suit-up
         ToolPickupEquipper.UnlockAllPickups();
 
-        // Advance phase
+        // Advance phase + notify
         OrbitRepairGameManager.Instance?.SetPhase(OrbitRepairGameManager.Phase.GrabTool);
         OrbitRepairSequenceDirector.Instance?.NotifySuitUpPressed();
 

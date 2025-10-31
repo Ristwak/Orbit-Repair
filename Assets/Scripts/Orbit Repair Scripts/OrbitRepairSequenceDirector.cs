@@ -1,7 +1,8 @@
+// File: OrbitRepairSequenceDirector.cs
 using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
 
-[DefaultExecutionOrder(-200)] // run before most scripts
+[DefaultExecutionOrder(-200)]
 public class OrbitRepairSequenceDirector : MonoBehaviour
 {
     public static OrbitRepairSequenceDirector Instance { get; private set; }
@@ -10,9 +11,9 @@ public class OrbitRepairSequenceDirector : MonoBehaviour
     [SerializeField] private Step step = Step.SuitUpButton;
 
     [Header("References (Interior)")]
-    [Tooltip("Suit-up button root (parent object). Will be enabled ONLY in step: SuitUpButton.")]
+    [Tooltip("Suit-up button root (parent object). Enabled ONLY in step: SuitUpButton.")]
     public GameObject suitUpButtonRoot;
-    public XRSimpleInteractable suitUpButtonInteractable;
+    public XRBaseInteractable suitUpButtonInteractable; // XR ray/direct select
     public Collider suitUpButtonCollider;
 
     [Space(6)]
@@ -41,7 +42,7 @@ public class OrbitRepairSequenceDirector : MonoBehaviour
         {
             if (suitUpButtonRoot)
             {
-                if (!suitUpButtonInteractable) suitUpButtonInteractable = suitUpButtonRoot.GetComponent<XRSimpleInteractable>();
+                if (!suitUpButtonInteractable) suitUpButtonInteractable = suitUpButtonRoot.GetComponent<XRBaseInteractable>();
                 if (!suitUpButtonCollider)     suitUpButtonCollider     = suitUpButtonRoot.GetComponent<Collider>();
             }
             if (worldToolRoot && !worldToolPickup) worldToolPickup = worldToolRoot.GetComponent<ToolPickupEquipper>();
@@ -57,23 +58,18 @@ public class OrbitRepairSequenceDirector : MonoBehaviour
         {
             SafeSetActive(worldToolRoot, false);
             SafeSetActive(leverRoot, false);
-            if (leverLoader) leverLoader.enabled = false;
+            if (leverLoader)       leverLoader.enabled = false;
             if (leverInteractable) leverInteractable.enabled = false;
-            if (leverCollider) leverCollider.enabled = false;
+            if (leverCollider)     leverCollider.enabled = false;
         }
 
-        ApplyStepGates(); // do it NOW, before others' Start()
+        ApplyStepGates(); // do it NOW
         Debug.Log($"[SeqDirector] Awake -> step={step}. Tool active? {IsActive(worldToolRoot)}. Lever active? {IsActive(leverRoot)}.");
     }
 
-    void OnEnable()
-    {
-        // Re-assert gates in case something toggled during enable order
-        ApplyStepGates();
-    }
+    void OnEnable() => ApplyStepGates();
 
-    // --------- External notifications from your existing scripts ---------
-
+    // --------- Notifications ---------
     public void NotifySuitUpPressed()
     {
         if (step != Step.SuitUpButton) return;
@@ -108,7 +104,7 @@ public class OrbitRepairSequenceDirector : MonoBehaviour
         Debug.Log("[SeqDirector] Lever pulled -> Loading exterior (Lever disabled).");
     }
 
-    // ---------------- Gating core ----------------
+    // --------- Gating core ---------
     private void ApplyStepGates()
     {
         switch (step)
@@ -145,16 +141,16 @@ public class OrbitRepairSequenceDirector : MonoBehaviour
     {
         SafeSetActive(suitUpButtonRoot, on);
         if (suitUpButtonInteractable) suitUpButtonInteractable.enabled = on;
-        if (suitUpButtonCollider) suitUpButtonCollider.enabled = on;
+        if (suitUpButtonCollider)     suitUpButtonCollider.enabled     = on;
         Debug.Log($"[SeqDirector] Button {(on ? "ENABLED" : "DISABLED")}");
     }
 
     private void EnableLever(bool on)
     {
         SafeSetActive(leverRoot, on);
-        if (leverLoader) leverLoader.enabled = on;
+        if (leverLoader)       leverLoader.enabled       = on;
         if (leverInteractable) leverInteractable.enabled = on;
-        if (leverCollider) leverCollider.enabled = on;
+        if (leverCollider)     leverCollider.enabled     = on;
         Debug.Log($"[SeqDirector] Lever {(on ? "ENABLED" : "DISABLED")}");
     }
 
