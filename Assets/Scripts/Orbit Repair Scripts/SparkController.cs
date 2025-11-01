@@ -1,4 +1,3 @@
-// File: SparkController.cs
 using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -17,6 +16,10 @@ public class SparkController : MonoBehaviour
     public float restartDelay = 2f;
     [Tooltip("Hard timeout (seconds) if we never detect audio has finished.")]
     public float narrationWaitTimeout = 20f;
+
+    [Header("Audio Clips")]
+    public AudioClip missionCompleteClip;  // For mission success (win)
+    public AudioClip missionFailClip;      // For mission failure (lose)
 
     [Header("Restart")]
     public string restartSceneName = "Orbit Repair";
@@ -65,67 +68,53 @@ public class SparkController : MonoBehaviour
         if (sparkEffect)
         {
             sparkEffect.Stop(true, ParticleSystemStopBehavior.StopEmitting);
+            PlayAudio(missionCompleteClip);
             Debug.Log("[SparkController] Sparks stopped.");
         }
 
-        // ---- Play Mission Complete VO ----
-        float waited = 0f;
-        bool played = false;
-
-        var am = AudioManager.instance;
-        if (am && am.missionCompleteClip)
-        {
-            // Give the VO priority
-            if (am.musicSource && am.musicSource.isPlaying) am.musicSource.Stop();
-            if (am.sfxSource && am.sfxSource.isPlaying) am.sfxSource.Stop();
-            if (am.narrationSource)
-            {
-                am.narrationSource.ignoreListenerPause = true; // ensure it plays even if the game gets paused elsewhere
-                if (am.narrationSource.isPlaying) am.narrationSource.Stop();
-            }
-
-            am.PlayNarration(am.missionCompleteClip);
-            played = true;
-
-            // Wait while narration actually plays (with timeout)
-            if (am.narrationSource)
-            {
-                while (am.narrationSource.isPlaying && waited < narrationWaitTimeout)
-                {
-                    waited += Time.unscaledDeltaTime; // don’t be affected by timeScale
-                    yield return null;
-                }
-            }
-            else
-            {
-                // If there’s no narrationSource, fall back to clip length
-                yield return new WaitForSeconds(am.missionCompleteClip.length);
-            }
-        }
-        else if (audioSource && audioSource.clip)
-        {
-            audioSource.Stop();
-            audioSource.Play();
-            played = true;
-
-            // Wait for local clip
-            waited = 0f;
-            while (audioSource.isPlaying && waited < narrationWaitTimeout)
-            {
-                waited += Time.unscaledDeltaTime;
-                yield return null;
-            }
-        }
+        // Wait for audio to finish
+        yield return new WaitForSeconds(audioSource.clip.length);
 
         // Optional small delay after audio
         if (restartDelay > 0f) yield return new WaitForSeconds(restartDelay);
 
-        // Restart
+        // Restart the scene
         var sceneName = string.IsNullOrEmpty(restartSceneName)
             ? SceneManager.GetActiveScene().name
             : restartSceneName;
 
         Debug.Log("[SparkController] Restarting scene: " + sceneName);
         SceneManager.LoadScene(sceneName);
+    }
+
+    void PlayAudio(AudioClip clip)
+    {
+        audioSource.clip = clip;
+        audioSource.Play();
+    }
+
+    // Called when game time runs out (or you decide the player loses)
+    public void TriggerFail()
+    {
+        // Check remaining time from GameTimer
+        if (GameTimer.Instance != null && GameTimer.Instance.GetRemaining() <= 0)
+        {
+            // Play Mission Fail audio and restart the game
+            var am = AudioManager.instance;
+            if (am && missionFailClip)
+            {
+                am.PlayNarration(missionFailClip); // Play the fail audio
+
+                // Wait for the fail audio to finish before restarting
+                StartCoroutine(RestartAfterAudio(missionFailClip.length));
+            }
+        }
+    }
+
+    // Helper to wait for the mission fail audio to finish before restarting the game
+    private IEnumerator RestartAfterAudio(float audioDuration)
+    {
+        yield return new WaitForSeconds(audioDuration + restartDelay);
+        SceneManager.LoadScene(restartSceneName); // Restart the game after the audio is played
     }
 }
